@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+    <PropertyGroup>
+        <OutputType>Exe</OutputType>
+        <TargetFramework>net6.0</TargetFramework>
+        <ImplicitUsings>enable</ImplicitUsings>
+        <Nullable>enable</Nullable>
+        <Title>Azure Data Explorer Utilities</Title>
+        <Authors>Darren Fuller &lt;darren@elastacloud.com&gt;, Cristina Vaillant &lt;cristina.vaillant@elastacloud.com&gt;, Ramachandra Hegde &lt;ram@elastacloud.com&gt;</Authors>
+        <Description>Provides a set of utilities for working with Azure Data Explorer such as schema and data export</Description>
+        <PackageProjectUrl>https://intelligentspaces.io</PackageProjectUrl>
+        <PackAsTool>true</PackAsTool>
+        <PackageId>AdxUtils</PackageId>
+        <ToolCommandName>adxutils</ToolCommandName>
+        <PackageOutputPath>./nupkg</PackageOutputPath>
+        <Version>0.0.1</Version>
+    </PropertyGroup>
+
+    <ItemGroup>
+        <ProjectReference Include="..\AdxUtils.Export\AdxUtils.Export.csproj" />
+        <ProjectReference Include="..\AdxUtils.Options\AdxUtils.Options.csproj" />
+    </ItemGroup>
+
+    <ItemGroup>
+        <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    </ItemGroup>
+
+</Project>
