@@ -35,6 +35,6 @@ jobs:
       run: |
         dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION
 
-    # - name: Publish with dotnet nuget push
-    #   run: |
-    #     dotnet nuget push "/home/runner/work/AdxUtils/AdxUtils/artifacts/AdxUtils.AdxUtils.Cli/AdxUtilities.$PACKAGE_VERSION.nupkg" --api-key ${{ secrets.ADX_GITHUB_KEY }} --source https://api.nuget.org/v3/index.json
+    - name: Publish with dotnet nuget push
+      run: |
+        dotnet nuget push "/home/runner/work/AdxUtils/AdxUtils/artifacts/AdxUtils.AdxUtils.Cli/AdxUtilities.$PACKAGE_VERSION.nupkg" --api-key ${{ secrets.ADX_GITHUB_KEY }} --source https://api.nuget.org/v3/index.json
