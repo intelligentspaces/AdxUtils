@@ -29,8 +29,7 @@ jobs:
 
     - name: Publish AdxUtils
       run: dotnet publish AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
-    
-        
+     
     - name: Pack AdxUtilsCli
       run: |
         dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION
