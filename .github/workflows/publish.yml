@@ -5,7 +5,7 @@ on:
     branches: [ "cristina/ci-cd-action" ]
   pull_request:
     branches: [ "cristina/ci-cd-action" ]
-  workflow_dispatch:
+  #workflow_dispatch:
 
 jobs:
   publish-ADXUTILS:
