@@ -26,7 +26,7 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Run
-      run:  dotnet run --project ../AdxUtils.Cli/AdxUtils.Cli.csproj --database eis-dev-db-01 --i adt_dh_eis_dev_twin_01_westeurope --e Permission,colorization_rules --client-id ${{ secrets.ADX_CLIENT_ID }} --client-secret ${{ secrets.ADX_CLIENT_SECRET }} --c ${{ secrets.ADX_URI }} --authority ${{ secrets.ADX_TENANT_ID }}
+      run:  dotnet run --project /home/runner/work/AdxUtils/AdxUtils/AdxUtils.Cli/AdxUtils.Cli.csproj --database eis-dev-db-01 --i adt_dh_eis_dev_twin_01_westeurope --e Permission,colorization_rules --client-id ${{ secrets.ADX_CLIENT_ID }} --client-secret ${{ secrets.ADX_CLIENT_SECRET }} --c ${{ secrets.ADX_URI }} --authority ${{ secrets.ADX_TENANT_ID }}
 
 
     
