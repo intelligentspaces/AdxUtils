@@ -3,8 +3,17 @@ using Kusto.Data.Common;
 
 namespace AdxUtils.Export;
 
+/// <summary>
+/// Provides methods for exporting items from an Azure Data Explorer instance.
+/// </summary>
 public static class DatabaseExporter
 {
+    /// <summary>
+    /// Extracts a database scheme to a CSL script and writes to the provided stream.
+    /// </summary>
+    /// <param name="options">The <see cref="ExportOptions"/> defined by the client.</param>
+    /// <param name="stream">A writeable stream to output the script to.</param>
+    /// <exception cref="ArgumentException">Thrown if the provided stream is not valid.</exception>
     public static async Task ToCslStreamAsync(ExportOptions options, Stream stream)
     {
         if (!stream.CanWrite)
