@@ -11,6 +11,7 @@
         <PackageProjectUrl>https://intelligentspaces.io</PackageProjectUrl>
         <PackAsTool>true</PackAsTool>
         <PackageId>AdxUtils</PackageId>
+        <RepositoryUrl>https://github.com/intelligentspaces/AdxUtils</RepositoryUrl>
         <ToolCommandName>adxutils</ToolCommandName>
         <PackageOutputPath>./nupkg</PackageOutputPath>
         <Version>0.0.1</Version>

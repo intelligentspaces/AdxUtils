@@ -1,0 +1,44 @@
+name: Build Status
+
+on: 
+  push:
+    branches: [ "cristina/ci-cd-action" ]
+  pull_request:
+    branches: [ "cristina/ci-cd-action" ]
+  # workflow_dispatch:
+
+jobs:
+  publish-ADXUTILS:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set Version
+      run: echo "PACKAGE_VERSION=$(date +'%Y.%-m.%-d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Create artifacts folder
+      run: |
+        mkdir "$GITHUB_WORKSPACE/artifacts"
+        mkdir "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+
+    - name: Publish AdxUtils
+      run: dotnet publish AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+    
+        
+    - name: Pack AdxUtilsCli
+      run: |
+        dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION
+
+    - name: Add source
+      run: |
+        dotnet nuget add source "https://nuget.pkg.github.com/AdxUtils/index.json" --username AdxUtils --password ${{ secrets.GITHUB_TOKEN }} --store-password-in-clear-text --name github 
+
+    - name: Push packages to GitHub Packages NuGet feed
+      run: |
+        dotnet nuget push "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli.$PACKAGE_VERSION.nupkg"  --api-key ${{ secrets.GITHUB_TOKEN }} --source "github"
