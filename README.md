@@ -1,3 +1,6 @@
+
+[![Build Status](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml/badge.svg)](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml)
+
 # Azure Data Explorer Utilities
 
 This is a command line application which is intended to provide a useful set of utilities for working with Azure Data Explorer. Mostly to make things easier where some tasks are not supported by the [Azure CLI](https://learn.microsoft.com/cli/azure/) or are needed to work in a way to support other activities.

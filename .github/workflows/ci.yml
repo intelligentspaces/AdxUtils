@@ -8,7 +8,7 @@ on:
   # workflow_dispatch:
 
 jobs:
-  push-ADXUTIlS:
+  push-ADXUTILS:
     runs-on: ubuntu-latest
 
     steps:
@@ -21,4 +21,10 @@ jobs:
 
     - name: Install dependencies
       run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+
+    
    
