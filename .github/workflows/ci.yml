@@ -1,0 +1,24 @@
+name: Build Status
+
+on: 
+  push:
+    branches: [ "cristina/ci-cd-action" ]
+  pull_request:
+    branches: [ "cristina/ci-cd-action" ]
+  # workflow_dispatch:
+
+jobs:
+  push-searchfood-forpet:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+   
