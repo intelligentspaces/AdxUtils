@@ -10,7 +10,9 @@
         <Description>Provides a set of utilities for working with Azure Data Explorer such as schema and data export</Description>
         <PackageProjectUrl>https://intelligentspaces.io</PackageProjectUrl>
         <PackAsTool>true</PackAsTool>
-        <PackageId>AdxUtils</PackageId>
+        <PackageId>AdxUtilities</PackageId>
+        <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
+        <PackageReadmeFile>README.md</PackageReadmeFile>
         <ToolCommandName>adxutils</ToolCommandName>
         <PackageOutputPath>./nupkg</PackageOutputPath>
         <Version>0.0.1</Version>
@@ -23,6 +25,11 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
+    </ItemGroup>
+    
+    <ItemGroup>
+        <None Include="../README.md" Pack="true" PackagePath=""/>
+        <None Include="../LICENSE.md" Pack="true" PackagePath=""/>
     </ItemGroup>
 
 </Project>
