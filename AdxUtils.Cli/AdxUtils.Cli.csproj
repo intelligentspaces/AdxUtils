@@ -9,6 +9,8 @@
         <Authors>Darren Fuller &lt;darren@elastacloud.com&gt;, Cristina Vaillant &lt;cristina.vaillant@elastacloud.com&gt;, Ramachandra Hegde &lt;ram@elastacloud.com&gt;</Authors>
         <Description>Provides a set of utilities for working with Azure Data Explorer such as schema and data export</Description>
         <PackageProjectUrl>https://intelligentspaces.io</PackageProjectUrl>
+        <RepositoryType>git</RepositoryType>
+        <RepositoryUrl>https://github.com/intelligentspaces/AdxUtils.git</RepositoryUrl>
         <PackAsTool>true</PackAsTool>
         <PackageId>AdxUtilities</PackageId>
         <PackageLicenseFile>LICENSE.md</PackageLicenseFile>
