@@ -1,4 +1,4 @@
-name: Build Status-Publish To Nuget
+name: Build Status - Publish To Nuget
 
 on: 
   push:
