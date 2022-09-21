@@ -2,9 +2,9 @@ name: Build Status - Publish To Nuget
 
 on: 
   push:
-    branches: [ "cristina/ci-cd-action" ]
+    branches: [ "main" ]
   pull_request:
-    branches: [ "cristina/ci-cd-action" ]
+    branches: [ "main" ]
 
 jobs:
   push-ADXUTILS:
