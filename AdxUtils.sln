@@ -11,6 +11,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Options", "AdxUtil
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Options.Tests", "AdxUtils.Options.Tests\AdxUtils.Options.Tests.csproj", "{767CCAB3-460E-4199-AD82-E6FEE6C2927F}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Export.Tests", "AdxUtils.Export.Tests\AdxUtils.Export.Tests.csproj", "{020FECB6-9E8D-40D6-994A-CA00E288F38E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -36,5 +38,9 @@ Global
 		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal
