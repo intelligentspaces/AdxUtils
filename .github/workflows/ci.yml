@@ -38,7 +38,7 @@ jobs:
 
     - uses: codecov/codecov-action@v3
       with:
-        files: $(github.workspace)/coverlet/reports/Cobertura.xml
+        files: ${{github.workspace}}/coverlet/reports/Cobertura.xml
         flags: unittests
         name: adx-utils-codecov
         fail_ci_if_error: true
