@@ -34,11 +34,11 @@ jobs:
     - name: Create code coverage report
       run: |
         dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator -reports:$(Agent.WorkFolder)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:'Cobertura'
+        reportgenerator -reports:${{runner.workspace}}/**/coverage.cobertura.xml -targetdir:${{github.workspace}}/coverlet/reports -reporttypes:'Cobertura'
 
     - uses: codecov/codecov-action@v3
       with:
-        files: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
+        files: $(github.workspace)/coverlet/reports/Cobertura.xml
         flags: unittests
         name: adx-utils-codecov
         fail_ci_if_error: true

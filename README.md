@@ -1,5 +1,5 @@
 
-[![Build Status - Publish To Nuget](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml/badge.svg)](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml)
+[![Build Status - Publish To Nuget](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/intelligentspaces/AdxUtils/actions/workflows/ci.yml)
 
 # Azure Data Explorer Utilities
 
