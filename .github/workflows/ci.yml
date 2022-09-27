@@ -29,12 +29,12 @@ jobs:
       run: dotnet build --configuration Release --no-restore
 
     - name: Run Tests
-      run: dotnet test --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
+      run: dotnet test --collect:"XPlat Code Coverage"
 
     - name: Create code coverage report
       run: |
         dotnet tool install --global dotnet-reportgenerator-globaltool
-        reportgenerator -reports:$(Agent.WorkFolder)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:'Cobertura'
+        reportgenerator -reports:$(Agent.WorkFolder)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/coverlet/reports -reporttypes:'Cobertura'
 
     - uses: codecov/codecov-action@v3
       with:
