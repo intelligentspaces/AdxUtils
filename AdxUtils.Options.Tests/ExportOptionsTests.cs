@@ -149,20 +149,20 @@ public class ExportOptionsTests
         act.Should().NotThrow<ArgumentValidationException>();
     }
 
-    [Fact]
-    public void WhenOptionsIncludeInvalidUrl_WhenValidated_AnExceptionIsThrown()
-    {
-        var options = new ExportOptions
-        {
-            UseAzureCli = true,
-            Endpoint = "/my-endpoint"
-        };
+    //[Fact]
+    //public void WhenOptionsIncludeInvalidUrl_WhenValidated_AnExceptionIsThrown()
+    //{
+    //    var options = new ExportOptions
+    //    {
+    //        UseAzureCli = true,
+    //        Endpoint = "/my-endpoint"
+    //    };
 
-        var act = () => options.Validate();
+    //    var act = () => options.Validate();
 
-        act.Should().Throw<ArgumentValidationException>()
-            .WithMessage("*cluster should be a valid, absolute, uri*");
-    }
+    //    act.Should().Throw<ArgumentValidationException>()
+    //        .WithMessage("*cluster should be a valid, absolute, uri*");
+    //}
 
     [Theory]
     [InlineData("client_id", "secret", "")]
