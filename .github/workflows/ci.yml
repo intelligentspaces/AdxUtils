@@ -28,23 +28,34 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Create artifacts folder
-      run: |
-        mkdir "$GITHUB_WORKSPACE/artifacts"
-        mkdir "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+    - name: Test
+      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
 
-    - name: Publish AdxUtils
-      run: dotnet publish AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+    - name: Create code coverage report
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        reportgenerator -reports:$(Agent.WorkFolder)/**/coverage.cobertura.xml -targetdir:$(Build.SourcesDirectory)/CodeCoverage -reporttypes:'Cobertura'
+
+    - uses: codecov/codecov-action@v3
+      with:
+        files: $(Build.SourcesDirectory)/coverlet/reports/Cobertura.xml
+        flags: unittests
+        name: adx-utils-codecov
+        fail_ci_if_error: true
+        verbose: true
+
+    #- name: Create artifacts folder
+    #  run: |
+    #    mkdir "$GITHUB_WORKSPACE/artifacts"
+    #    mkdir "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+
+    #- name: Publish AdxUtils
+    #  run: dotnet publish AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
      
-    - name: Pack AdxUtilsCli
-      run: |
-        dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION -p:Version=$PACKAGE_VERSION
+    #- name: Pack AdxUtilsCli
+    #  run: |
+    #    dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION -p:Version=$PACKAGE_VERSION
 
-    - name: Publish with dotnet nuget push
-      run: |
-        dotnet nuget push "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli/AdxUtilities.$PACKAGE_VERSION.nupkg" --api-key ${{ secrets.ADX_GITHUB_KEY }} --source https://api.nuget.org/v3/index.json
-
-
-
-    
-   
+    #- name: Publish with dotnet nuget push
+    #  run: |
+    #    dotnet nuget push "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli/AdxUtilities.$PACKAGE_VERSION.nupkg" --api-key ${{ secrets.ADX_GITHUB_KEY }} --source https://api.nuget.org/v3/index.json
