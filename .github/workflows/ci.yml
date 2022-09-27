@@ -28,8 +28,8 @@ jobs:
     - name: Build
       run: dotnet build --configuration Release --no-restore
 
-    - name: Test
-      run: dotnet test --no-build --verbosity normal --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
+    - name: Run Tests
+      run: dotnet test --collect:"XPlat Code Coverage" --logger trx --results-directory coverage
 
     - name: Create code coverage report
       run: |
