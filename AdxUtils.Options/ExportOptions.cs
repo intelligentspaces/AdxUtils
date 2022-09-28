@@ -69,8 +69,8 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
             }
 
             var result = from renamedTable in RenamedTables
-                let pair = renamedTable.Split('=', 2)
-                where pair.Length == 2
+                let pair = renamedTable.Split('=').Take(2).ToArray()
+                where pair.Length == 2 && pair.All(i => !string.IsNullOrEmpty(i))
                 select (pair[0], pair[1]);
 
             return result.ToArray();

@@ -51,8 +51,15 @@ public static class PolicyShowCommandResultExtensions
     /// <returns>True if the command is enabled, otherwise false.</returns>
     public static bool IsEnabled(this PolicyShowCommandResult result)
     {
-        var parsed = JObject.Parse(result.Policy);
-        return parsed.ContainsKey("IsEnabled") && Convert.ToBoolean(parsed["IsEnabled"]!.Value<string>());
+        try
+        {
+            var parsed = JObject.Parse(result.Policy);
+            return parsed.ContainsKey("IsEnabled") && Convert.ToBoolean(parsed["IsEnabled"]!.Value<string>());
+        }
+        catch (Exception)
+        {
+            return false;
+        }
     }
 
     /// <summary>
