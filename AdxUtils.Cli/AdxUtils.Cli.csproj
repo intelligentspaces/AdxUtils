@@ -23,6 +23,7 @@
     <ItemGroup>
         <ProjectReference Include="..\AdxUtils.Export\AdxUtils.Export.csproj" />
         <ProjectReference Include="..\AdxUtils.Options\AdxUtils.Options.csproj" />
+        <ProjectReference Include="..\AdxUtils.Spark\AdxUtils.Spark.csproj" />
     </ItemGroup>
 
     <ItemGroup>
@@ -30,8 +31,8 @@
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="../README.md" Pack="true" PackagePath=""/>
-        <None Include="../LICENSE.md" Pack="true" PackagePath=""/>
+        <None Include="../README.md" Pack="true" PackagePath="" />
+        <None Include="../LICENSE.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>
