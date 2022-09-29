@@ -80,6 +80,7 @@ public class KustoQuery : IDisposable
 
             var ingestValue = value switch
             {
+                sbyte s => s.ToString(),
                 bool b => b ? "1": "0",
                 DateTime dateTime => dateTime.ToString("o"),
                 Guid guid => guid.ToString(),
