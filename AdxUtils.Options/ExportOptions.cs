@@ -34,7 +34,7 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
     public string ClientSecret { get; set; } = string.Empty;
     
     /// <summary>
-    /// Gets, sets the authority to authenticate agaisnt.
+    /// Gets, sets the authority to authenticate against.
     /// </summary>
     public string Authority { get; set; } = string.Empty;
     
@@ -69,8 +69,8 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
             }
 
             var result = from renamedTable in RenamedTables
-                let pair = renamedTable.Split('=', 2)
-                where pair.Length == 2
+                let pair = renamedTable.Split('=').Take(2).ToArray()
+                where pair.Length == 2 && pair.All(i => !string.IsNullOrEmpty(i))
                 select (pair[0], pair[1]);
 
             return result.ToArray();
@@ -80,12 +80,12 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
     /// <summary>
     /// Gets the collection of ignored tables as a non-nullable array.
     /// </summary>
-    public IEnumerable<string> IgnoredTablesArray => IgnoredTables?.ToArray() ?? Array.Empty<string>();
+    public IEnumerable<string> IgnoredTablesArray => IgnoredTables?.Select(t => t.Trim()).ToArray() ?? Array.Empty<string>();
 
     /// <summary>
     /// Gets the collection of tables to have their data exported as a non-nullable array.
     /// </summary>
-    public IEnumerable<string> ExportedDataTablesArray => ExportedDataTables?.ToArray() ?? Array.Empty<string>();
+    public IEnumerable<string> ExportedDataTablesArray => ExportedDataTables?.Select(t => t.Trim()).ToArray() ?? Array.Empty<string>();
 
     /// <summary>
     /// Validates the values provided for the export options.

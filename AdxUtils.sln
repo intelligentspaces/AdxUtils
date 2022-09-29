@@ -9,6 +9,10 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Cli", "AdxUtils.Cl
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Options", "AdxUtils.Options\AdxUtils.Options.csproj", "{DB1A25F2-2C60-48FF-A384-FF166CB27B6C}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Options.Tests", "AdxUtils.Options.Tests\AdxUtils.Options.Tests.csproj", "{767CCAB3-460E-4199-AD82-E6FEE6C2927F}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Export.Tests", "AdxUtils.Export.Tests\AdxUtils.Export.Tests.csproj", "{020FECB6-9E8D-40D6-994A-CA00E288F38E}"
+EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "AdxUtils.Spark", "AdxUtils.Spark\AdxUtils.Spark.csproj", "{F67ACAB7-4602-4DEA-8865-ED9ADA2F55CC}"
 EndProject
 Global
@@ -32,6 +36,14 @@ Global
 		{DB1A25F2-2C60-48FF-A384-FF166CB27B6C}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{DB1A25F2-2C60-48FF-A384-FF166CB27B6C}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{DB1A25F2-2C60-48FF-A384-FF166CB27B6C}.Release|Any CPU.Build.0 = Release|Any CPU
+		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{767CCAB3-460E-4199-AD82-E6FEE6C2927F}.Release|Any CPU.Build.0 = Release|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{020FECB6-9E8D-40D6-994A-CA00E288F38E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{F67ACAB7-4602-4DEA-8865-ED9ADA2F55CC}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{F67ACAB7-4602-4DEA-8865-ED9ADA2F55CC}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{F67ACAB7-4602-4DEA-8865-ED9ADA2F55CC}.Release|Any CPU.ActiveCfg = Release|Any CPU
