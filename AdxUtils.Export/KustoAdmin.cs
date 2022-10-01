@@ -1,28 +1,18 @@
-﻿using AdxUtils.Options;
-using Kusto.Data;
+﻿using Kusto.Data;
 using Kusto.Data.Common;
-using Kusto.Data.Net.Client;
 using Newtonsoft.Json;
 
 namespace AdxUtils.Export;
 
-public class KustoAdmin : IDisposable
+public class KustoAdmin
 {
     private readonly ICslAdminProvider _client;
 
     private readonly string _databaseName;
 
-    public KustoAdmin(IAuthenticationOptions authenticationOptions, IEndpointOptions endpointOptions)
+    public KustoAdmin(ICslAdminProvider adminProvider)
     {
-        _databaseName = endpointOptions.DatabaseName;
-
-        var connectionStringBuilder = Authentication.GetConnectionStringBuilder(authenticationOptions, endpointOptions);
-        _client = KustoClientFactory.CreateCslAdminProvider(connectionStringBuilder);
-    }
-
-    public KustoAdmin(KustoConnectionStringBuilder connectionStringBuilder)
-    {
-        _client = KustoClientFactory.CreateCslAdminProvider(connectionStringBuilder);
+        _client = adminProvider;
         _databaseName = _client.DefaultDatabaseName;
     }
 
@@ -93,11 +83,5 @@ public class KustoAdmin : IDisposable
         }
 
         return policies;
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

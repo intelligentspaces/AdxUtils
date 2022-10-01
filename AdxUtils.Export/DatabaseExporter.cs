@@ -6,25 +6,33 @@ namespace AdxUtils.Export;
 /// <summary>
 /// Provides methods for exporting items from an Azure Data Explorer instance.
 /// </summary>
-public static class DatabaseExporter
+public class DatabaseExporter
 {
+    private readonly ICslQueryProvider _queryProvider;
+
+    private readonly ICslAdminProvider _adminProvider;
+    
+    public DatabaseExporter(ICslQueryProvider queryProvider, ICslAdminProvider adminProvider)
+    {
+        _queryProvider = queryProvider;
+        _adminProvider = adminProvider;
+    }
+
     /// <summary>
     /// Extracts a database scheme to a CSL script and writes to the provided stream.
     /// </summary>
     /// <param name="options">The <see cref="ExportOptions"/> defined by the client.</param>
     /// <param name="stream">A writeable stream to output the script to.</param>
     /// <exception cref="ArgumentException">Thrown if the provided stream is not valid.</exception>
-    public static async Task ToCslStreamAsync(ExportOptions options, Stream stream)
+    public async Task ToCslStreamAsync(ExportOptions options, Stream stream)
     {
         if (!stream.CanWrite)
         {
             throw new ArgumentException("Stream must be writable");
         }
-
-        var connectionStringBuilder = Authentication.GetConnectionStringBuilder(options, options);
         
-        using var admin = new KustoAdmin(connectionStringBuilder);
-        using var query = new KustoQuery(connectionStringBuilder);
+        var admin = new KustoAdmin(_adminProvider);
+        var query = new KustoQuery(_queryProvider);
 
         await using var writer = new StreamWriter(stream);
 

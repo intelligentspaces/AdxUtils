@@ -27,11 +27,13 @@
 
     <ItemGroup>
         <PackageReference Include="CommandLineParser" Version="2.9.1" />
+        <PackageReference Include="Microsoft.Extensions.DependencyInjection" Version="6.0.0" />
+        <PackageReference Include="Microsoft.Extensions.Hosting" Version="6.0.1" />
     </ItemGroup>
     
     <ItemGroup>
-        <None Include="../README.md" Pack="true" PackagePath=""/>
-        <None Include="../LICENSE.md" Pack="true" PackagePath=""/>
+        <None Include="../README.md" Pack="true" PackagePath="" />
+        <None Include="../LICENSE.md" Pack="true" PackagePath="" />
     </ItemGroup>
 
 </Project>

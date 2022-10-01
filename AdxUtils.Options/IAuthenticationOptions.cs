@@ -5,6 +5,18 @@ namespace AdxUtils.Options;
 public interface IAuthenticationOptions
 {
     /// <summary>
+    /// Gets, sets the Azure Data Explorer cluster URL.
+    /// </summary>
+    [Option('c', "cluster", Required = true, HelpText = "The cluster id to export from")]
+    public string Endpoint { get; set; }
+    
+    /// <summary>
+    /// Gets, sets the name of the database to connect to.
+    /// </summary>
+    [Option('d', "database", Required = true, HelpText = "Specifies the database to be exported")]
+    public string DatabaseName { get; set; }
+    
+    /// <summary>
     /// Gets, sets a flag indicating if the Azure CLI credentials should be used for authentication.
     /// </summary>
     [Option("use-cli", Required = false, Group = "Authentication Method", HelpText = "Use the Azure CLI for authentication")]

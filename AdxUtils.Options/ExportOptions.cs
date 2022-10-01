@@ -6,7 +6,7 @@ namespace AdxUtils.Options;
 /// Represents the export options which can be specified at the command line.
 /// </summary>
 [Verb("export", true, HelpText = "Export a database schema with optional data items")]
-public class ExportOptions : IAuthenticationOptions, IEndpointOptions
+public class ExportOptions : IAuthenticationOptions
 {
     /// <summary>
     /// Gets, sets the Azure Data Explorer cluster URL.
@@ -56,6 +56,11 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
     [Option('e', "export", Required = false, Separator = ',', HelpText = "Comma-separated list of tables to export data for")]
     public IEnumerable<string>? ExportedDataTables { get; set; }
 
+    [Option('o', "output", Required = false, Default = ".", HelpText = "Path for the output file to be written to")]
+    public string OutputPath { get; set; } = ".";
+
+    public DirectoryInfo OutputDirectory { get; private set; } = new (".");
+
     /// <summary>
     /// Gets the tables to be renamed as pairs of values.
     /// </summary>
@@ -100,6 +105,19 @@ public class ExportOptions : IAuthenticationOptions, IEndpointOptions
         }
 
         Endpoint = validatedUri.ToString();
+
+        try
+        {
+            OutputDirectory = new DirectoryInfo(OutputPath);
+            if (!OutputDirectory.Exists)
+            {
+                OutputDirectory.Create();
+            }
+        }
+        catch (IOException e)
+        {
+            throw new ArgumentValidationException("Unable to create output directory", e);
+        }
 
         if (!UseAzureCli && (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(ClientSecret) ||
                              string.IsNullOrWhiteSpace(Authority)))
