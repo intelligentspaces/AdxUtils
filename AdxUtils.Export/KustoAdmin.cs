@@ -26,14 +26,21 @@ public class KustoAdmin
 
         schemaReader.Read();
         var schemaContent = schemaReader.GetString(0);
-        var schema = JsonConvert.DeserializeObject<ClusterSchema>(schemaContent);
-
-        if (schema == null || schema.Databases.Count == 0)
+        try
         {
-            throw new KustoAdminException($"Unable to load schema for database {_databaseName}");
-        }
+            var schema = JsonConvert.DeserializeObject<ClusterSchema>(schemaContent);
 
-        return schema;
+            if (schema == null || schema.Databases.Count == 0)
+            {
+                throw new KustoAdminException($"Unable to load schema for database {_databaseName}");
+            }
+
+            return schema;
+        }
+        catch (JsonReaderException ex)
+        {
+            throw new KustoAdminException("Unable to parse response into a schema", ex);
+        }
     }
 
     public async Task<IList<IngestionMappingShowCommandResult>> GetDatabaseIngestionMappings()
