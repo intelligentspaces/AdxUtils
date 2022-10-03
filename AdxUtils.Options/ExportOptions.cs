@@ -114,7 +114,7 @@ public class ExportOptions : IAuthenticationOptions
                 OutputDirectory.Create();
             }
         }
-        catch (IOException e)
+        catch (Exception e)
         {
             throw new ArgumentValidationException("Unable to create output directory", e);
         }
