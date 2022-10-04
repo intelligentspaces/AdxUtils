@@ -78,7 +78,7 @@ public class ExportOptionsTests
     }
 
     [Fact]
-    public void WhenOptionsIncludeNullRename_WhenPropertyIsCalled_ThenAnEmptyArrayisReturned()
+    public void WhenOptionsIncludeNullRename_WhenPropertyIsCalled_ThenAnEmptyArrayIsReturned()
     {
         var options = new ExportOptions
         {
@@ -91,7 +91,7 @@ public class ExportOptionsTests
     }
 
     [Fact]
-    public void WhenOptionsIncludeEmptyRename_WhenPropertyIsCalled_ThenAnEmptyArrayisReturned()
+    public void WhenOptionsIncludeEmptyRename_WhenPropertyIsCalled_ThenAnEmptyArrayIsReturned()
     {
         var options = new ExportOptions
         {

@@ -35,7 +35,7 @@ public interface IAuthenticationOptions
     public string ClientSecret { get; set; }
 
     /// <summary>
-    /// Gets, sets the authority to authenticate agaisnt.
+    /// Gets, sets the authority to authenticate against.
     /// </summary>
     [Option("authority", Required = false, HelpText = "The authority (e.g. contoso.com) or AAD tenant id to authenticate against")]
     public string Authority { get; set; }
