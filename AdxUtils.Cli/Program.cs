@@ -1,4 +1,5 @@
-﻿using AdxUtils.Export;
+﻿using System.Text.RegularExpressions;
+using AdxUtils.Export;
 using AdxUtils.Options;
 using CommandLine;
 using Kusto.Data.Net.Client;
@@ -39,6 +40,8 @@ internal static class Program
             {
                 services.AddSingleton(KustoClientFactory.CreateCslAdminProvider(kustoConnectionStringBuilder));
                 services.AddSingleton(KustoClientFactory.CreateCslQueryProvider(kustoConnectionStringBuilder));
+                services.AddScoped<IKustoAdmin, KustoAdmin>();
+                services.AddScoped<IKustoQuery, KustoQuery>();
                 services.AddScoped<DatabaseExporter>();
             })
             .Build();
@@ -51,7 +54,7 @@ internal static class Program
     {
         var provider = BuildServiceProvider(options);
 
-        var scriptName = $"{options.DatabaseName.ToLower().Replace(" ", "_")}.csl";
+        var scriptName = $"{Regex.Replace(options.DatabaseName.ToLower(), "\\s+", "_")}.csl";
 
         FileInfo outputFilePath;
 

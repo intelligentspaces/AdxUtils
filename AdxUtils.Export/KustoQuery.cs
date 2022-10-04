@@ -5,7 +5,7 @@ using Kusto.Data.Common;
 
 namespace AdxUtils.Export;
 
-public class KustoQuery
+public class KustoQuery : IKustoQuery
 {
     private readonly ICslQueryProvider _client;
 

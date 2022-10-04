@@ -183,6 +183,21 @@ public class ExportOptionsTests
     }
 
     [Fact]
+    public void WhenOptionsIncludeInvalidEndpoint_WhenValidated_AnExceptionIsThrown()
+    {
+        var options = new ExportOptions
+        {
+            UseAzureCli = true,
+            Endpoint = ""
+        };
+
+        var act = () => options.Validate();
+
+        act.Should().Throw<ArgumentValidationException>()
+            .WithMessage("The cluster should be a valid, absolute, uri*");
+    }
+
+    [Fact]
     public void WhenOptionsIncludeInvalidOutputPath_WhenValidated_AnExceptionIsThrown()
     {
         var options = new ExportOptions

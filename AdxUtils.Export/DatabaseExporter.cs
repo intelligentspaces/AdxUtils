@@ -8,14 +8,14 @@ namespace AdxUtils.Export;
 /// </summary>
 public class DatabaseExporter
 {
-    private readonly ICslQueryProvider _queryProvider;
+    private readonly IKustoAdmin _adminService;
 
-    private readonly ICslAdminProvider _adminProvider;
+    private readonly IKustoQuery _queryService;
     
-    public DatabaseExporter(ICslQueryProvider queryProvider, ICslAdminProvider adminProvider)
+    public DatabaseExporter(IKustoAdmin adminService, IKustoQuery queryService)
     {
-        _queryProvider = queryProvider;
-        _adminProvider = adminProvider;
+        _adminService = adminService;
+        _queryService = queryService;
     }
 
     /// <summary>
@@ -30,15 +30,12 @@ public class DatabaseExporter
         {
             throw new ArgumentException("Stream must be writable");
         }
-        
-        var admin = new KustoAdmin(_adminProvider);
-        var query = new KustoQuery(_queryProvider);
 
         await using var writer = new StreamWriter(stream);
 
-        var (_, databaseSchema) = (await admin.GetDatabaseSchema()).Databases.First();
-        var databaseMappings = await admin.GetDatabaseIngestionMappings();
-        var ingestionTimePolicies = await admin.GetIngestionTimePolicies();
+        var (_, databaseSchema) = (await _adminService.GetDatabaseSchema()).Databases.First();
+        var databaseMappings = await _adminService.GetDatabaseIngestionMappings();
+        var ingestionTimePolicies = await _adminService.GetIngestionTimePolicies();
         
         await writer.WriteLineAsync("//");
         await writer.WriteLineAsync("// Create tables");
@@ -105,7 +102,7 @@ public class DatabaseExporter
             await writer.WriteLineAsync(temp.ToCslString());
             await writer.WriteLineAsync();
             
-            await writer.WriteLineAsync(await query.TableDataToCslString(tableSchema.Value, temp.Name));
+            await writer.WriteLineAsync(await _queryService.TableDataToCslString(tableSchema.Value, temp.Name));
 
             await writer.WriteLineAsync(tableSchema.Value.SetOrReplaceTableCslString(temp.Name));
             await writer.WriteLineAsync();

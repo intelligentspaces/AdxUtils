@@ -4,7 +4,7 @@ using Newtonsoft.Json;
 
 namespace AdxUtils.Export;
 
-public class KustoAdmin
+public class KustoAdmin : IKustoAdmin
 {
     private readonly ICslAdminProvider _client;
 
