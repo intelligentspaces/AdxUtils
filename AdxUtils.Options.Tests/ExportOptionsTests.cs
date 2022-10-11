@@ -78,7 +78,7 @@ public class ExportOptionsTests
     }
 
     [Fact]
-    public void WhenOptionsIncludeNullRename_WhenPropertyIsCalled_ThenAnEmptyArrayisReturned()
+    public void WhenOptionsIncludeNullRename_WhenPropertyIsCalled_ThenAnEmptyArrayIsReturned()
     {
         var options = new ExportOptions
         {
@@ -91,7 +91,7 @@ public class ExportOptionsTests
     }
 
     [Fact]
-    public void WhenOptionsIncludeEmptyRename_WhenPropertyIsCalled_ThenAnEmptyArrayisReturned()
+    public void WhenOptionsIncludeEmptyRename_WhenPropertyIsCalled_ThenAnEmptyArrayIsReturned()
     {
         var options = new ExportOptions
         {
@@ -138,15 +138,21 @@ public class ExportOptionsTests
     [Fact]
     public void WhenOptionsIncludeValidSettings_WhenValidated_ThenSuccessful()
     {
+        var tempPath = Path.GetRandomFileName();
+        
         var options = new ExportOptions
         {
             UseAzureCli = true,
-            Endpoint = "https://a.valid.url/"
+            Endpoint = "https://a.valid.url/",
+            OutputPath = tempPath
         };
 
         var act = () => options.Validate();
 
         act.Should().NotThrow<ArgumentValidationException>();
+        options.OutputDirectory.Name.Should().Be(tempPath);
+        
+        Directory.Delete(tempPath);
     }
 
     [Theory]
@@ -174,5 +180,36 @@ public class ExportOptionsTests
 
         act.Should().Throw<ArgumentValidationException>()
             .WithMessage("*id, secret, and authority must be specified*");
+    }
+
+    [Fact]
+    public void WhenOptionsIncludeInvalidEndpoint_WhenValidated_AnExceptionIsThrown()
+    {
+        var options = new ExportOptions
+        {
+            UseAzureCli = true,
+            Endpoint = ""
+        };
+
+        var act = () => options.Validate();
+
+        act.Should().Throw<ArgumentValidationException>()
+            .WithMessage("The cluster should be a valid, absolute, uri*");
+    }
+
+    [Fact]
+    public void WhenOptionsIncludeInvalidOutputPath_WhenValidated_AnExceptionIsThrown()
+    {
+        var options = new ExportOptions
+        {
+            UseAzureCli = true,
+            Endpoint = "https://valid.url",
+            OutputPath = "./:Z:/\0"
+        };
+
+        var act = () => options.Validate();
+
+        act.Should().Throw<ArgumentValidationException>()
+            .WithMessage("Unable to create output directory");
     }
 }

@@ -1,28 +1,18 @@
-﻿using AdxUtils.Options;
-using Kusto.Data;
+﻿using Kusto.Data;
 using Kusto.Data.Common;
-using Kusto.Data.Net.Client;
 using Newtonsoft.Json;
 
 namespace AdxUtils.Export;
 
-public class KustoAdmin : IDisposable
+public class KustoAdmin : IKustoAdmin
 {
     private readonly ICslAdminProvider _client;
 
     private readonly string _databaseName;
 
-    public KustoAdmin(IAuthenticationOptions authenticationOptions, IEndpointOptions endpointOptions)
+    public KustoAdmin(ICslAdminProvider adminProvider)
     {
-        _databaseName = endpointOptions.DatabaseName;
-
-        var connectionStringBuilder = Authentication.GetConnectionStringBuilder(authenticationOptions, endpointOptions);
-        _client = KustoClientFactory.CreateCslAdminProvider(connectionStringBuilder);
-    }
-
-    public KustoAdmin(KustoConnectionStringBuilder connectionStringBuilder)
-    {
-        _client = KustoClientFactory.CreateCslAdminProvider(connectionStringBuilder);
+        _client = adminProvider;
         _databaseName = _client.DefaultDatabaseName;
     }
 
@@ -36,14 +26,21 @@ public class KustoAdmin : IDisposable
 
         schemaReader.Read();
         var schemaContent = schemaReader.GetString(0);
-        var schema = JsonConvert.DeserializeObject<ClusterSchema>(schemaContent);
-
-        if (schema == null || schema.Databases.Count == 0)
+        try
         {
-            throw new KustoAdminException($"Unable to load schema for database {_databaseName}");
-        }
+            var schema = JsonConvert.DeserializeObject<ClusterSchema>(schemaContent);
 
-        return schema;
+            if (schema == null || schema.Databases.Count == 0)
+            {
+                throw new KustoAdminException($"Unable to load schema for database {_databaseName}");
+            }
+
+            return schema;
+        }
+        catch (JsonReaderException ex)
+        {
+            throw new KustoAdminException("Unable to parse response into a schema", ex);
+        }
     }
 
     public async Task<IList<IngestionMappingShowCommandResult>> GetDatabaseIngestionMappings()
@@ -93,11 +90,5 @@ public class KustoAdmin : IDisposable
         }
 
         return policies;
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

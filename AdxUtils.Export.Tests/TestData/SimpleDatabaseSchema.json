@@ -1,0 +1,43 @@
+{
+  "Databases": {
+    "db01": {
+      "Name": "db01",
+      "DatabaseAccessMode": "ReadWrite",
+      "MajorVersion": 4795,
+      "MinorVersion": 1813,
+      "Tables": {
+        "table01": {
+          "Name": "table01",
+          "OrderedColumns": [
+            {
+              "Name": "col_01",
+              "Type": "System.Int64",
+              "CslType": "long"
+            },
+            {
+              "Name": "col_02",
+              "Type": "System.String",
+              "CslType": "string"
+            },
+            {
+              "Name": "col_03",
+              "Type": "System.String",
+              "CslType": "string"
+            }
+          ]
+        }
+      },
+      "Functions": {
+        "simpleFunc": {
+          "Name": "simpleFunc",
+          "InputParameters": [],
+          "Body": "{\r\ntable01\r\n| limit 10\r\n}",
+          "Folder": "Example",
+          "DocString": "This is a simple function",
+          "FunctionKind": "UnknownFunction",
+          "OutputColumns": []
+        }
+      }
+    }
+  }
+}
