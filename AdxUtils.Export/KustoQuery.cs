@@ -1,30 +1,19 @@
 ﻿using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text;
-using AdxUtils.Options;
-using Kusto.Data;
 using Kusto.Data.Common;
-using Kusto.Data.Net.Client;
 
 namespace AdxUtils.Export;
 
-public class KustoQuery : IDisposable
+public class KustoQuery : IKustoQuery
 {
     private readonly ICslQueryProvider _client;
 
     private readonly string _databaseName;
 
-    public KustoQuery(IAuthenticationOptions authenticationOptions, IEndpointOptions endpointOptions)
+    public KustoQuery(ICslQueryProvider queryProvider)
     {
-        _databaseName = endpointOptions.DatabaseName;
-
-        var connectionStringBuilder = Authentication.GetConnectionStringBuilder(authenticationOptions, endpointOptions);
-        _client = KustoClientFactory.CreateCslQueryProvider(connectionStringBuilder);
-    }
-
-    public KustoQuery(KustoConnectionStringBuilder connectionStringBuilder)
-    {
-        _client = KustoClientFactory.CreateCslQueryProvider(connectionStringBuilder);
+        _client = queryProvider;
         _databaseName = _client.DefaultDatabaseName;
     }
 
@@ -97,11 +86,5 @@ public class KustoQuery : IDisposable
         }
 
         return string.Join(",", values);
-    }
-
-    public void Dispose()
-    {
-        _client.Dispose();
-        GC.SuppressFinalize(this);
     }
 }

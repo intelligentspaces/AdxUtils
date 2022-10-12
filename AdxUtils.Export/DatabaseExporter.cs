@@ -6,31 +6,36 @@ namespace AdxUtils.Export;
 /// <summary>
 /// Provides methods for exporting items from an Azure Data Explorer instance.
 /// </summary>
-public static class DatabaseExporter
+public class DatabaseExporter
 {
+    private readonly IKustoAdmin _adminService;
+
+    private readonly IKustoQuery _queryService;
+    
+    public DatabaseExporter(IKustoAdmin adminService, IKustoQuery queryService)
+    {
+        _adminService = adminService;
+        _queryService = queryService;
+    }
+
     /// <summary>
     /// Extracts a database scheme to a CSL script and writes to the provided stream.
     /// </summary>
     /// <param name="options">The <see cref="ExportOptions"/> defined by the client.</param>
     /// <param name="stream">A writeable stream to output the script to.</param>
     /// <exception cref="ArgumentException">Thrown if the provided stream is not valid.</exception>
-    public static async Task ToCslStreamAsync(ExportOptions options, Stream stream)
+    public async Task ToCslStreamAsync(ExportOptions options, Stream stream)
     {
         if (!stream.CanWrite)
         {
             throw new ArgumentException("Stream must be writable");
         }
 
-        var connectionStringBuilder = Authentication.GetConnectionStringBuilder(options, options);
-        
-        using var admin = new KustoAdmin(connectionStringBuilder);
-        using var query = new KustoQuery(connectionStringBuilder);
-
         await using var writer = new StreamWriter(stream);
 
-        var (_, databaseSchema) = (await admin.GetDatabaseSchema()).Databases.First();
-        var databaseMappings = await admin.GetDatabaseIngestionMappings();
-        var ingestionTimePolicies = await admin.GetIngestionTimePolicies();
+        var (_, databaseSchema) = (await _adminService.GetDatabaseSchema()).Databases.First();
+        var databaseMappings = await _adminService.GetDatabaseIngestionMappings();
+        var ingestionTimePolicies = await _adminService.GetIngestionTimePolicies();
         
         await writer.WriteLineAsync("//");
         await writer.WriteLineAsync("// Create tables");
@@ -97,7 +102,7 @@ public static class DatabaseExporter
             await writer.WriteLineAsync(temp.ToCslString());
             await writer.WriteLineAsync();
             
-            await writer.WriteLineAsync(await query.TableDataToCslString(tableSchema.Value, temp.Name));
+            await writer.WriteLineAsync(await _queryService.TableDataToCslString(tableSchema.Value, temp.Name));
 
             await writer.WriteLineAsync(tableSchema.Value.SetOrReplaceTableCslString(temp.Name));
             await writer.WriteLineAsync();

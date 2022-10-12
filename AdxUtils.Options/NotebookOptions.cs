@@ -3,7 +3,7 @@
 namespace AdxUtils.Options;
 
 [Verb("notebook", HelpText = "Generates a spark notebook")]
-public class NotebookOptions : IAuthenticationOptions, IEndpointOptions
+public class NotebookOptions : IAuthenticationOptions
 {
     /// <summary>
     /// Gets, sets the Azure Data Explorer cluster URL.
