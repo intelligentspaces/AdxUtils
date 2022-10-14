@@ -23,7 +23,6 @@
     <ItemGroup>
         <ProjectReference Include="..\AdxUtils.Export\AdxUtils.Export.csproj" />
         <ProjectReference Include="..\AdxUtils.Options\AdxUtils.Options.csproj" />
-        <ProjectReference Include="..\AdxUtils.Spark\AdxUtils.Spark.csproj" />
     </ItemGroup>
 
     <ItemGroup>

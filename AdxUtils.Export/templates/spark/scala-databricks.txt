@@ -22,9 +22,10 @@ import com.microsoft.azure.kusto.data.ClientRequestProperties
 
 // COMMAND ----------
 
-val kustoClientId = dbutils.secrets.get("secret-scope", "kusto-client-id")
-val kustoClientSecret = dbutils.secrets.get("secret-scope", "kusto-client-secret")
-val tenantId = dbutils.secrets.get("secret-scope", "kusto-client-tenantid")
+val scopeName = "secret-scope"
+val kustoClientId = dbutils.secrets.get(scopeName, "kusto-client-id")
+val kustoClientSecret = dbutils.secrets.get(scopeName, "kusto-client-secret")
+val tenantId = dbutils.secrets.get(scopeName, "kusto-client-tenantid")
 
 val authenticationOptions = Map(
   KustoSourceOptions.KUSTO_AAD_APP_ID -> kustoClientId,
@@ -50,7 +51,7 @@ val database = "{{database}}"
 
 // COMMAND ----------
 
-val query = "colorization_rules | limit 10"
+val query = {{query}}
 
 // COMMAND ----------
 

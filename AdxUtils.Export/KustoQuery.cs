@@ -2,6 +2,7 @@
 using System.Globalization;
 using System.Text;
 using Kusto.Data.Common;
+using Kusto.Data.Exceptions;
 
 namespace AdxUtils.Export;
 
@@ -33,6 +34,21 @@ public class KustoQuery : IKustoQuery
         }
 
         return queryBuilder.ToString();
+    }
+
+    public async Task<(bool, string?)> IsValidQuery(string query)
+    {
+        var limitedQuery = $"{query} | limit 1";
+
+        try
+        {
+            _ = await _client.ExecuteQueryAsync(_databaseName, limitedQuery, null);
+            return (true, null);
+        }
+        catch (KustoException ex)
+        {
+            return (false, ex.Message);
+        }
     }
 
     private async Task<IList<string>> GetTableData(TableSchema table)

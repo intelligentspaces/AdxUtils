@@ -34,12 +34,59 @@ public class NotebookOptions : IAuthenticationOptions
     /// Gets, sets the authority to authenticate against.
     /// </summary>
     public string Authority { get; set; } = string.Empty;
+    
+    [Option('n', "name", Required = false, HelpText = "The name of the notebook")]
+    public string Name { get; set; }
 
     [Option('l', "language", Required = false, HelpText = "Specifies the language for the notebook. Default is Python.")]
     public LanguageType Language { get; set; } = LanguageType.Python;
 
     [Option('s', "service", Required = false, HelpText = "Specifies which service the notebook will be deployed to. Default is Databricks.")]
     public ServiceType Service { get; set; } = ServiceType.Databricks;
+    
+    [Option('q', "query", Required = false, Group = "Query Source", HelpText = "The query to execute as part of the generated notebook")]
+    public string Query { get; set; }
+    
+    [Option('i', "query-path", Required = false, Group = "Query Source", HelpText = "A path to a file containing the query to execute as part of the generated notebook")]
+    public string QueryFilePath { get; set; }
+
+    [Option('o', "output", Required = false, Default = ".", HelpText = "Path for the output file to be written to")]
+    public string OutputPath { get; set; } = ".";
+
+    public DirectoryInfo OutputDirectory { get; private set; } = new (".");
+
+    public async Task<string> GetQuery()
+    {
+        if (!string.IsNullOrEmpty(Query))
+        {
+            return Query;
+        }
+
+        return (await File.ReadAllTextAsync(QueryFilePath)).Trim().Trim('\n', '\r');
+    }
+
+    public void Validate()
+    {
+        ((IAuthenticationOptions)this).ValidateAuthenticationOptions();
+
+        if (!string.IsNullOrEmpty(QueryFilePath) && !File.Exists(QueryFilePath))
+        {
+            throw new ArgumentValidationException("The specified query path is not valid");
+        }
+        
+        try
+        {
+            OutputDirectory = new DirectoryInfo(OutputPath);
+            if (!OutputDirectory.Exists)
+            {
+                OutputDirectory.Create();
+            }
+        }
+        catch (Exception e)
+        {
+            throw new ArgumentValidationException("Unable to create output directory", e);
+        }
+    }
 }
 
 public enum LanguageType

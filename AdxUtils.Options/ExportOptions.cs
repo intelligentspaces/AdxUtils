@@ -98,13 +98,7 @@ public class ExportOptions : IAuthenticationOptions
     /// <exception cref="ArgumentValidationException">Thrown when the option values are invalid.</exception>
     public void Validate()
     {
-        // Validate the endpoint contains a valid URL
-        if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out var validatedUri))
-        {
-            throw new ArgumentValidationException("The cluster should be a valid, absolute, uri such as 'https://<adx name>.<region>.kusto.windows.net'");
-        }
-
-        Endpoint = validatedUri.ToString();
+        ((IAuthenticationOptions)this).ValidateAuthenticationOptions();
 
         try
         {
@@ -117,12 +111,6 @@ public class ExportOptions : IAuthenticationOptions
         catch (Exception e)
         {
             throw new ArgumentValidationException("Unable to create output directory", e);
-        }
-
-        if (!UseAzureCli && (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(ClientSecret) ||
-                             string.IsNullOrWhiteSpace(Authority)))
-        {
-            throw new ArgumentValidationException("When using client secret authentication then the id, secret, and authority must be specified");
         }
     }
 }

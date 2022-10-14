@@ -1,7 +1,6 @@
 ﻿using System.Text.RegularExpressions;
 using AdxUtils.Export;
 using AdxUtils.Options;
-using AdxUtils.Spark;
 using CommandLine;
 using CommandLine.Text;
 using Kusto.Data.Net.Client;
@@ -27,7 +26,11 @@ internal static class Program
                         opts.Validate();
                         return RunExportAndReturnCode(opts);
                     },
-                    (NotebookOptions opts) => { return RunNotebookGenerationAndReturnCode(opts); },
+                    (NotebookOptions opts) =>
+                    {
+                        opts.Validate();
+                        return RunNotebookGenerationAndReturnCode(opts);
+                    },
                     errs => DisplayHelp(parserResult, errs)
                 );
 
@@ -51,6 +54,7 @@ internal static class Program
                 services.AddScoped<IKustoAdmin, KustoAdmin>();
                 services.AddScoped<IKustoQuery, KustoQuery>();
                 services.AddScoped<DatabaseExporter>();
+                services.AddScoped<NotebookGenerator>();
             })
             .Build();
 
@@ -111,7 +115,32 @@ internal static class Program
 
     private static async Task<int> RunNotebookGenerationAndReturnCode(NotebookOptions options)
     {
-        await NotebookGenerator.GenerateNotebook(options);
+        var provider = BuildServiceProvider(options);
+        var exporter = provider.GetRequiredService<NotebookGenerator>();
+
+        var notebookName = string.IsNullOrEmpty(options.Name) 
+            ? "adx-query" 
+            : Regex.Replace(options.Name, "\\s", "-");
+
+        var scriptName = $"{notebookName}.{exporter.GetFileExtension(options)}";
+
+        FileInfo outputFilePath;
+
+        try
+        {
+            outputFilePath = new FileInfo(Path.Join(options.OutputDirectory.FullName, scriptName));
+        }
+        catch (Exception ex)
+        {
+            throw new ArgumentValidationException("Unable to process output location.", ex);
+        }
+
+        if (outputFilePath.Exists) outputFilePath.Delete();
+
+        await using var stream = outputFilePath.OpenWrite();
+        
+        await exporter.GenerateNotebook(options, stream);
+        Console.WriteLine($"Script written to: {outputFilePath.FullName}");
 
         return 0;
     }
