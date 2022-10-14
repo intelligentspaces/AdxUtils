@@ -75,6 +75,8 @@ public class DatabaseExporter
         await writer.WriteLineAsync();
         foreach (var function in databaseSchema.Functions)
         {
+            if (options.IgnoredFunctionsArray.Contains(function.Key, StringComparer.OrdinalIgnoreCase) || options.IgnoredFunctionsArray.Contains($"{function.Value.Folder}/", StringComparer.OrdinalIgnoreCase)) continue;
+
             var functionScript = function.Value.ToCslString();
 
             foreach (var (source, target) in options.RenamedTablePairs)

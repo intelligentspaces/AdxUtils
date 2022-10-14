@@ -43,6 +43,12 @@ public class ExportOptions : IAuthenticationOptions
     /// </summary>
     [Option('i', "ignore", Required = false, Separator = ',', HelpText = "Comma-separated list of tables to ignore")]
     public IEnumerable<string>? IgnoredTables { get; set; }
+
+    /// <summary>
+    /// Gets, sets a collection of functions names which should not be created.
+    /// </summary>
+    [Option('f', "function", Required = false, Separator = ',', HelpText = "Comma-separated list of functions or function folders(followed by /) to ignore (e.g. function1,folder1/)")]
+    public IEnumerable<string>? IgnoredFunctions { get; set; }
     
     /// <summary>
     /// Gets, sets a collection of key=value pairs of tables to be renamed.
@@ -86,6 +92,11 @@ public class ExportOptions : IAuthenticationOptions
     /// Gets the collection of ignored tables as a non-nullable array.
     /// </summary>
     public IEnumerable<string> IgnoredTablesArray => IgnoredTables?.Select(t => t.Trim()).ToArray() ?? Array.Empty<string>();
+
+    /// <summary>
+    /// Gets the collection of ignored functions as a non-nullable array.
+    /// </summary>
+    public IEnumerable<string> IgnoredFunctionsArray => IgnoredFunctions?.Select(t => t.Trim()).ToArray() ?? Array.Empty<string>();
 
     /// <summary>
     /// Gets the collection of tables to have their data exported as a non-nullable array.
