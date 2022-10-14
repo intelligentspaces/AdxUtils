@@ -118,6 +118,70 @@ public class DatabaseExportTests
         await act.Should().ThrowAsync<ArgumentException>().WithMessage("Stream must be writable");
     }
 
+    [Fact]
+    public async Task WhenExportingADatabase_WhenFunctionIsIgnored_ThenItIsExcludedFromOutput()
+    {
+        var (adminService, queryService) = CreateMocks();
+
+        var options = new ExportOptions
+        {
+            Endpoint = "https://valid.url",
+            UseAzureCli = true,
+            DatabaseName = DatabaseName,
+            ExportedDataTables = new[] { "table1" },
+            IgnoredFunctions = new[] { "simpleFunc1" }
+        };
+
+        var expected = (await File.ReadAllLinesAsync("TestData/SimpleIgnoredFunctions.csl"))
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        var exporter = new DatabaseExporter(adminService.Object, queryService.Object);
+        var ms = new MemoryStream();
+
+        await exporter.ToCslStreamAsync(options, ms);
+
+        var result = Encoding.UTF8.GetString(ms.GetBuffer()).Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        result.Should().NotBeEmpty().And.Contain(expected);
+    }
+
+    [Fact]
+    public async Task WhenExportingADatabase_WhenFunctionFolderIsIgnored_ThenItIsExcludedFromOutput()
+    {
+        var (adminService, queryService) = CreateMocks();
+
+        var options = new ExportOptions
+        {
+            Endpoint = "https://valid.url",
+            UseAzureCli = true,
+            DatabaseName = DatabaseName,
+            ExportedDataTables = new[] { "table1" },
+            IgnoredFunctions = new[] { "test/" }
+        };
+
+        var expected = (await File.ReadAllLinesAsync("TestData/SimpleIgnoredFunctionFolder.csl"))
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        var exporter = new DatabaseExporter(adminService.Object, queryService.Object);
+        var ms = new MemoryStream();
+
+        await exporter.ToCslStreamAsync(options, ms);
+
+        var result = Encoding.UTF8.GetString(ms.GetBuffer()).Split(Environment.NewLine, StringSplitOptions.RemoveEmptyEntries)
+            .Select(l => l.Trim())
+            .Where(l => !string.IsNullOrEmpty(l))
+            .ToList();
+
+        result.Should().NotBeEmpty().And.Contain(expected);
+    }
+
     private static (Mock<IKustoAdmin>, Mock<IKustoQuery>) CreateMocks()
     {
         var dbSchema = new DatabaseSchema(DatabaseName)
