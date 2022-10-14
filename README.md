@@ -21,7 +21,7 @@ An example usage of the command is
 > adxutils -c https://myinstance.region.kusto.windows.net/
            -d my-database
            --ignore Table3
-           --function function1,folder3
+           --function folder3/,function1
            --export Table1,Table2
            --rename Table4=Table5
            --use-cli
