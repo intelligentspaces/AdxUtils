@@ -64,12 +64,12 @@ public class NotebookGenerator
         await writer.WriteAsync(templateContent);
     }
 
-    public string GetFileExtension(NotebookOptions options)
+    public static string GetFileExtension(NotebookOptions options)
     {
         return options.Language switch
         {
             LanguageType.Scala => "scala",
-            _ => ".py"
+            _ => "py"
         };
     }
 }

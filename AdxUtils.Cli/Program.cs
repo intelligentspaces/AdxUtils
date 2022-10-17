@@ -122,7 +122,7 @@ internal static class Program
             ? "adx-query" 
             : Regex.Replace(options.Name, "\\s", "-");
 
-        var scriptName = $"{notebookName}.{exporter.GetFileExtension(options)}";
+        var scriptName = $"{notebookName}.{NotebookGenerator.GetFileExtension(options)}";
 
         FileInfo outputFilePath;
 
