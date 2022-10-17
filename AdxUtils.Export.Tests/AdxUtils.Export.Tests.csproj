@@ -27,10 +27,10 @@
       <ProjectReference Include="..\AdxUtils.Export\AdxUtils.Export.csproj" />
     </ItemGroup>
 
-    <ItemGroup>
-      <None Update="TestData\*">
-        <CopyToOutputDirectory>Always</CopyToOutputDirectory>
-      </None>
-    </ItemGroup>
+	<ItemGroup>
+		<None Update="TestData\*">
+			<CopyToOutputDirectory>Always</CopyToOutputDirectory>
+		</None>
+	</ItemGroup>
 
 </Project>
