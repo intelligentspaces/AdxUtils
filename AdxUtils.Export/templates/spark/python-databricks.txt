@@ -1,0 +1,68 @@
+﻿# Databricks notebook source
+# MAGIC %md
+# MAGIC 
+# MAGIC # Read data from Azure Data Explorer
+# MAGIC 
+# MAGIC For information on how to configure your cluster to use the libraries required for this notebook, please see the [Azure Data Explorer Connector for Apache Spark](https://learn.microsoft.com/azure/data-explorer/spark-connector) documentation.
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC ## Configuration
+# MAGIC 
+# MAGIC Define the authentication and connection properties for the request
+
+# COMMAND ----------
+
+scopeName = 'secret-scope'
+
+kusto_client_id = dbutils.secrets.get(scopeName, 'kusto-client-id')
+kusto_client_secret = dbutils.secrets.get(scopeName, 'kusto-client-secret')
+tenant_id = dbutils.secrets.get(scopeName, 'kusto-client-tenantid')
+
+client_request_properties = sc._jvm.com.microsoft.azure.kusto.data.ClientRequestProperties()
+client_request_properties.setOption('norequesttimeout', True)
+
+# COMMAND ----------
+
+kusto_cluster_id = '{{cluster-id}}'
+database = '{{database}}'
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC ## Query definition
+# MAGIC 
+# MAGIC In this section the query is defined ready for execution
+
+# COMMAND ----------
+
+query = {{query}}
+
+# COMMAND ----------
+
+# MAGIC %md
+# MAGIC 
+# MAGIC ## Query Execution
+# MAGIC 
+# MAGIC Once all of the connectivity and query information is defined, read data from the Data Explorer instance as a DataFrame
+
+# COMMAND ----------
+
+df = (spark.read.format('com.microsoft.kusto.spark.datasource')
+  .option('kustoAadAppId', kusto_client_id)
+  .option('kustoAadAppSecret', kusto_client_secret)
+  .option('kustoAadAuthorityID', tenant_id)
+  .option('kustoCluster', kusto_cluster_id)
+  .option('kustoDatabase', database)
+  .option('kustoQuery', query)
+  .option('clientRequestPropertiesJson', client_request_properties.toString())
+  .option('readMode', 'ForceDistributedMode')
+  .load()
+)
+
+# COMMAND ----------
+
+display(df)
