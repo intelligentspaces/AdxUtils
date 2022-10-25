@@ -1,0 +1,49 @@
+// # Read data from Azure Data Explorer
+// 
+// You can find out more about the ADX Spark connector from the the [Microsoft documentation](https://learn.microsoft.com/azure/data-explorer/spark-connector).
+// 
+// This notebook makes use of linked services for handling connectivity and authentication.
+// 
+// Synapse is unable to import scala code as multiple cells. The sections are defined below by the sections of markdown, feel free to split as desired.
+
+import com.microsoft.kusto.spark.datasource.KustoSourceOptions
+import com.microsoft.azure.kusto.data.ClientRequestProperties
+import com.microsoft.azure.synapse.tokenlibrary.TokenLibrary
+
+// ## Configuration
+// 
+// Here we define the options needed for connecting to the Azure Data Explorer source. _N.B._ Change the linked service name to the one for your environment.
+// 
+// Unlike the PySpark library we can't pass in a linked service name, and so we use the `TokenLibrary` to access the endpoint (cluster) and an authentication token from the linked service to use in the connection settings.
+
+val database = "{{database}}"
+val linkedServiceName = "linked-service-name"
+
+val clientRequestProperties = new ClientRequestProperties()
+clientRequestProperties.setOption("norequesttimeout", true)
+
+val connectionProperties = TokenLibrary.getPropertiesAsMap(linkedServiceName)
+val cluster = connectionProperties.getOrElse("Endpoint", throw new NoSuchElementException("Endpoint not available")).toString
+val token = connectionProperties.getOrElse("AuthKey", throw new NoSuchElementException("Token not available")).toString
+
+// ## Query definition
+// 
+// Here we define the query we're going to run.
+
+val query = {{query}}
+
+// ## Query execution
+// 
+// Once all of the connectivity and query information is defined, read data from the Data Explorer instance as a DataFrame. It is recommended to change the data frame name from `df` into something more meaningful for your specific workflow.
+
+val df = spark.read
+    .format("com.microsoft.kusto.spark.datasource")
+    .option(KustoSourceOptions.KUSTO_CLUSTER, cluster)
+    .option(KustoSourceOptions.KUSTO_DATABASE, database)
+    .option(KustoSourceOptions.KUSTO_ACCESS_TOKEN, token)
+    .option(KustoSourceOptions.KUSTO_CLIENT_REQUEST_PROPERTIES_JSON, clientRequestProperties.toString)
+    .option(KustoSourceOptions.KUSTO_READ_MODE, "ForceDistributedMode")
+    .option(KustoSourceOptions.KUSTO_QUERY, query)
+    .load
+
+display(df)

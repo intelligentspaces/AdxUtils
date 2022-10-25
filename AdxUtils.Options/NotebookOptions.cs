@@ -34,9 +34,9 @@ public class NotebookOptions : IAuthenticationOptions
     /// Gets, sets the authority to authenticate against.
     /// </summary>
     public string Authority { get; set; } = string.Empty;
-    
+
     [Option('n', "name", Required = false, HelpText = "The name of the notebook")]
-    public string Name { get; set; }
+    public string Name { get; set; } = string.Empty;
 
     [Option('l', "language", Required = false, HelpText = "Specifies the language for the notebook. Default is Python.")]
     public LanguageType Language { get; set; } = LanguageType.Python;
@@ -45,10 +45,10 @@ public class NotebookOptions : IAuthenticationOptions
     public ServiceType Service { get; set; } = ServiceType.Databricks;
     
     [Option('q', "query", Required = false, Group = "Query Source", HelpText = "The query to execute as part of the generated notebook")]
-    public string Query { get; set; }
+    public string Query { get; set; } = string.Empty;
     
     [Option('i', "query-path", Required = false, Group = "Query Source", HelpText = "A path to a file containing the query to execute as part of the generated notebook")]
-    public string QueryFilePath { get; set; }
+    public string QueryFilePath { get; set; } = string.Empty;
 
     [Option('o', "output", Required = false, Default = ".", HelpText = "Path for the output file to be written to")]
     public string OutputPath { get; set; } = ".";

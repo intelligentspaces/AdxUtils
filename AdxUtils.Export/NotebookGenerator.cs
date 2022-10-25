@@ -54,7 +54,7 @@ public class NotebookGenerator
             LanguageType.Scala when NewLineChars.Any(query.Contains) => $"\"\"\"{query}\"\"\"",
             LanguageType.Scala => $"\"{query}\"",
             LanguageType.Python when NewLineChars.Any(query.Contains) => $"'''{query}'''",
-            _ => $"'{query}'"
+            _ => $"\"{query}\""
         };
 
         templateContent = templateContent.Replace("{{cluster-id}}", options.Endpoint, StringComparison.Ordinal)

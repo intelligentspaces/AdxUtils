@@ -1,0 +1,62 @@
+#!/usr/bin/env python
+# coding: utf-8
+
+# ## ADX - Python
+# 
+# 
+# 
+
+# # Read data from Azure Data Explorer
+# 
+# You can find out more about the ADX Spark connector from the the [Microsoft documentation](https://learn.microsoft.com/azure/data-explorer/spark-connector).
+# 
+# This notebook makes use of linked services for handling connectivity and authentication.
+
+# ## Configuration
+# 
+# Here we define the options needed for connecting to the Azure Data Explorer source. _N.B._ Change the linked service name to the one for your environment.
+
+# In[ ]:
+
+
+database = '{{database}}'
+linked_service_name = 'adx-linked-service-name'
+
+client_request_properties = sc._jvm.com.microsoft.azure.kusto.data.ClientRequestProperties()
+client_request_properties.setOption('norequesttimeout', True)
+
+
+# ## Query definition
+# 
+# Here we define the query we're going to run. It's defined separately here as it is easier to make changes here than when it's defined directly in the options. Double quotes are used here to surround the query string as it might contain string values which use single quotes.
+
+# In[ ]:
+
+
+query = {{query}}
+
+
+# ## Query execution
+# 
+# Once all of the connectivity and query information is defined, read data from the Data Explorer instance as a DataFrame. It is recommended to change the data frame name from `df` into something more meaningful for your specific workflow.
+
+# In[ ]:
+
+
+df = (
+    spark.read
+        .format('com.microsoft.kusto.spark.synapse.datasource')
+        .option('spark.synapse.linkedService', linked_service_name)
+        .option('KustoDatabase', database)
+        .option('clientRequestPropertiesJson', client_request_properties.toString())
+        .option('readMode', 'ForceDistributedMode')
+        .option('KustoQuery', query)
+        .load()
+)
+
+
+# In[ ]:
+
+
+display(df)
+
