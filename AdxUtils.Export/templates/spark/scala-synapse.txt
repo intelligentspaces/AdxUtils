@@ -17,7 +17,7 @@ import com.microsoft.azure.synapse.tokenlibrary.TokenLibrary
 // Unlike the PySpark library we can't pass in a linked service name, and so we use the `TokenLibrary` to access the endpoint (cluster) and an authentication token from the linked service to use in the connection settings.
 
 val database = "{{database}}"
-val linkedServiceName = "linked-service-name"
+val linkedServiceName = "adx-linked-service-name"
 
 val clientRequestProperties = new ClientRequestProperties()
 clientRequestProperties.setOption("norequesttimeout", true)
