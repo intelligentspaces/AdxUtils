@@ -18,7 +18,7 @@ This is the first of the utilities developed which automates the generation of a
 An example usage of the command is
 
 ```bash
-> adxutils -c https://myinstance.region.kusto.windows.net/
+> adxutils export -c https://myinstance.region.kusto.windows.net/
            -d my-database
            --ignore Table3
            --function folder3/,function1
@@ -26,3 +26,21 @@ An example usage of the command is
            --rename Table4=Table5
            --use-cli
 ```
+
+## Notebook
+
+This command allows you to quickly create a source file for use in Spark (Databricks, Synapse, or Standalone) targeting either Python or Scala. It takes a query to use in the notebook and validates it before generating the notebook. This allows you to more quickly move on to the more fun aspects of Spark without remembering the details of how to query an Azure Data Explorer data source.
+
+```bash
+> adxutils notebook -c https://myinstance.region.kusto.windows.net/
+           -d my-database
+           --use-cli
+           -l python
+           -s synapse
+           -q "table1 | where LastModified > ago(1d)"
+           -n "my-new-notebook"
+
+# outputs to my-new-notebook.py
+```
+
+The query can be specified in-line or, for more complex queries, can be read from a source file. By default the generated file is placed into the current directory, but an output option can be specified to put it elsewhere.
