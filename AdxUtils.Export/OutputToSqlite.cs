@@ -29,7 +29,7 @@ namespace AdxUtils.Export
             var tableName = authenticationOptions.DatabaseName;  
             
             //Initialise Kusto connection
-            var kcsb = new KustoConnectionStringBuilder(cluster, tableName).WithAadAzCliAuthentication(); //withAadCliauthent not sure if needed here cos authenticate method
+            var kcsb = new KustoConnectionStringBuilder(cluster, tableName).WithAadAzCliAuthentication(); 
             var runInput = KustoClientFactory.CreateCslQueryProvider(kcsb);
 
             if (authenticationOptions.Query.StartsWith("."))
@@ -37,17 +37,9 @@ namespace AdxUtils.Export
                 Console.WriteLine($"Executing command against {tableName}");
 
                 Query = authenticationOptions.Query;
-                runInput = KustoClientFactory.CreateCslQueryProvider(kcsb);
+                runInput = (Kusto.Data.Common.ICslQueryProvider)KustoClientFactory.CreateCslAdminProvider(kcsb);
             }
 
-            if (Regex.IsMatch(authenticationOptions.Query, @"^[a-zA-Z]"))
-            {
-                Console.WriteLine($"Executing query against {tableName}");
-
-                Query= authenticationOptions.Query;
-                runInput = KustoClientFactory.CreateCslQueryProvider(kcsb);
-
-            }
             else if (!(authenticationOptions.Query.StartsWith(".") || Regex.IsMatch(authenticationOptions.Query, @"^[a-zA-Z]")))
             {
                 Console.WriteLine("Invalid query/command input");
