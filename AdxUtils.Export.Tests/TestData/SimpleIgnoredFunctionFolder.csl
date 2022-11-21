@@ -1,0 +1,26 @@
+﻿//
+// Create tables
+//
+
+// Creating table1
+.create-merge table table1 (col1:string, col2:datetime)
+
+.alter table table1 policy ingestiontime true
+
+.create-or-alter table table1 ingestion json mapping "table1_mapping" '[{"column":"col1","path":"$.col1","datatype":"string","transform":null},{"column":"col2","path":"$.col2","datatype":"datetime","transform":null}]'
+
+//
+// Create functions
+//
+
+//
+// Ingest data
+//
+
+.ingest inline into table table1_temp <|
+"row1",2022-10-21T19:21:23.000000
+"row2",2022-10-21T19:22:27.000000
+
+.set-or-replace  table1 with(policy_ingestiontime = true, distributed = False) <| table1_temp
+
+.drop table table1_temp ifexists

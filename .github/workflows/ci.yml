@@ -1,0 +1,60 @@
+name: Build Status - Publish To Nuget
+
+on: 
+  push:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  push-ADXUTILS:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Set Version
+      run: echo "PACKAGE_VERSION=$(date +'%Y.%-m.%-d').$GITHUB_RUN_NUMBER" >> $GITHUB_ENV
+
+    - name: Setup dotnet
+      uses: actions/setup-dotnet@v2
+      with:
+        dotnet-version: '6.0.x'
+
+    - name: Install dependencies
+      run: dotnet restore
+
+    - name: Build
+      run: dotnet build --configuration Release --no-restore
+
+    - name: Run Tests
+      run: dotnet test --collect:"XPlat Code Coverage"
+
+    - name: Create code coverage report
+      run: |
+        dotnet tool install --global dotnet-reportgenerator-globaltool
+        reportgenerator -reports:${{runner.workspace}}/**/coverage.cobertura.xml -targetdir:${{github.workspace}}/coverlet/reports -reporttypes:'Cobertura'
+
+    - uses: codecov/codecov-action@v3
+      with:
+        token: ${{ secrets.CODECOV_TOKEN }}
+        files: ${{github.workspace}}/coverlet/reports/Cobertura.xml
+        flags: unittests
+        name: adx-utils-codecov
+        fail_ci_if_error: true
+        verbose: true
+
+    - name: Create artifacts folder
+      run: |
+        mkdir "$GITHUB_WORKSPACE/artifacts"
+        mkdir "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+
+    - name: Publish AdxUtils
+      run: dotnet publish AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli"
+     
+    - name: Pack AdxUtilsCli
+      run: |
+        dotnet pack AdxUtils.Cli/AdxUtils.Cli.csproj --configuration Release --output "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli" -p:PackageVersion=$PACKAGE_VERSION -p:Version=$PACKAGE_VERSION
+
+    - name: Publish with dotnet nuget push
+      run: |
+        dotnet nuget push "$GITHUB_WORKSPACE/artifacts/AdxUtils.AdxUtils.Cli/AdxUtilities.$PACKAGE_VERSION.nupkg" --api-key ${{ secrets.ADX_GITHUB_KEY }} --source https://api.nuget.org/v3/index.json
