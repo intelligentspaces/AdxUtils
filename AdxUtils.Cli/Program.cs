@@ -14,12 +14,17 @@ internal static class Program
     {
         try
         {
-            var result = await Parser.Default.ParseArguments<ExportOptions>(args)
+            var result = await Parser.Default.ParseArguments<ExportOptions, ExportToSqlOptions>(args)
                 .MapResult(
                     (ExportOptions opts) =>
                     {
-                        opts.Validate();
+                        opts.ValidateExportOptions();
                         return RunExportAndReturnCode(opts);
+                    },
+                    (ExportToSqlOptions opts) =>
+                    {
+                        opts.ValidateExportOptions();
+                        return RunSqlExportAndReturnCode(opts);
                     },
                     errs => Task.FromResult(1));
 
@@ -43,6 +48,7 @@ internal static class Program
                 services.AddScoped<IKustoAdmin, KustoAdmin>();
                 services.AddScoped<IKustoQuery, KustoQuery>();
                 services.AddScoped<DatabaseExporter>();
+                services.AddScoped<OutputToSqlite>();
             })
             .Build();
 
@@ -75,6 +81,21 @@ internal static class Program
 
         await exporter.ToCslStreamAsync(options, stream);
         Console.WriteLine($"Script written to: {outputFilePath.FullName}");
+
+        return 0;
+    }
+
+    private static async Task<int> RunSqlExportAndReturnCode(ExportToSqlOptions options)
+    {
+        var provider = BuildServiceProvider(options);
+
+        if (options.OutputFile.Exists)
+        {
+            options.OutputFile.Delete();
+        }
+
+        var exporter = provider.GetRequiredService<OutputToSqlite>();
+        await exporter.ToSqliteDb(options);
 
         return 0;
     }

@@ -37,11 +37,6 @@ public class ExportOptions : IAuthenticationOptions
     /// Gets, sets the authority to authenticate against.
     /// </summary>
     public string Authority { get; set; } = string.Empty;
-
-    /// <summary>
-    /// Gets, sets the query to run against ADX.
-    /// </summary>
-    public string Query { get; set; } = string.Empty;
     
     /// <summary>
     /// Gets, sets a collection of table names which should be excluded from the export.
@@ -112,16 +107,10 @@ public class ExportOptions : IAuthenticationOptions
     /// Validates the values provided for the export options.
     /// </summary>
     /// <exception cref="ArgumentValidationException">Thrown when the option values are invalid.</exception>
-    public void Validate()
+    public void ValidateExportOptions()
     {
-        // Validate the endpoint contains a valid URL
-        if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out var validatedUri))
-        {
-            throw new ArgumentValidationException("The cluster should be a valid, absolute, uri such as 'https://<adx name>.<region>.kusto.windows.net'");
-        }
-
-        Endpoint = validatedUri.ToString();
-
+        ((IAuthenticationOptions)this).Validate();
+        
         try
         {
             OutputDirectory = new DirectoryInfo(OutputPath);
@@ -133,12 +122,6 @@ public class ExportOptions : IAuthenticationOptions
         catch (Exception e)
         {
             throw new ArgumentValidationException("Unable to create output directory", e);
-        }
-
-        if (!UseAzureCli && (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(ClientSecret) ||
-                             string.IsNullOrWhiteSpace(Authority)))
-        {
-            throw new ArgumentValidationException("When using client secret authentication then the id, secret, and authority must be specified");
         }
     }
 }

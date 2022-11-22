@@ -1,18 +1,7 @@
-﻿using System;
-using System.Data;
-using System.Data.SqlTypes;
-using System.Diagnostics;
+﻿using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text;
-using System.Text.RegularExpressions;
-using AdxUtils.Export;
-using AdxUtils.Options;
-using Azure;
-using Kusto.Cloud.Platform.Data;
-using Kusto.Data;
 using Kusto.Data.Common;
-using Kusto.Data.Linq;
-using Kusto.Data.Net.Client;
 
 namespace AdxUtils.Export;
 
@@ -44,6 +33,36 @@ public class KustoQuery : IKustoQuery
         }
 
         return queryBuilder.ToString();
+    }
+
+    public async Task<List<ReaderRecord>> ExecuteQuery(string query)
+    {
+        Console.WriteLine("Executing query");
+
+        var clientRequestProperties = new ClientRequestProperties
+        {
+            ClientRequestId = $"AdxUtils.Export;{Guid.NewGuid().ToString()}"
+        };
+        clientRequestProperties.SetOption(ClientRequestProperties.OptionNoTruncation, true);
+
+        var reader = await _client.ExecuteQueryAsync(_databaseName, query, clientRequestProperties);
+        var results = new List<ReaderRecord>();
+
+        while (reader.Read())
+        {
+            var record = new ReaderRecord();
+
+            for (var i = 0; i < reader.FieldCount; i++)
+            {
+                record.Fields.Add(reader.GetName(i));
+                record.FieldTypes.Add(reader.GetFieldType(i));
+                record.Values.Add(reader.GetValue(i));
+            }
+            
+            results.Add(record);
+        }
+
+        return results;
     }
 
     private async Task<IList<string>> GetTableData(TableSchema table)

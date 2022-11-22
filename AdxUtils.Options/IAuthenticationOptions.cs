@@ -39,10 +39,21 @@ public interface IAuthenticationOptions
     /// </summary>
     [Option("authority", Required = false, HelpText = "The authority (e.g. contoso.com) or AAD tenant id to authenticate against")]
     public string Authority { get; set; }
+    
+    public void Validate()
+    {
+        // Validate the endpoint contains a valid URL
+        if (!Uri.TryCreate(Endpoint, UriKind.Absolute, out var validatedUri))
+        {
+            throw new ArgumentValidationException("The cluster should be a valid, absolute, uri such as 'https://<adx name>.<region>.kusto.windows.net'");
+        }
 
-    /// <summary>
-    /// Gets, sets the Azure Data Explorer cluster URL.
-    /// </summary>
-    [Option('q', "query", Required = false, HelpText = "The query to run against ADX")]
-    public string Query { get; set; }
+        Endpoint = validatedUri.ToString();
+
+        if (!UseAzureCli && (string.IsNullOrWhiteSpace(ClientId) || string.IsNullOrWhiteSpace(ClientSecret) ||
+                             string.IsNullOrWhiteSpace(Authority)))
+        {
+            throw new ArgumentValidationException("When using client secret authentication then the id, secret, and authority must be specified");
+        }
+    }
 }

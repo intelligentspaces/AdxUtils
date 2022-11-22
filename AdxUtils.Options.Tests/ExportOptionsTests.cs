@@ -147,7 +147,7 @@ public class ExportOptionsTests
             OutputPath = tempPath
         };
 
-        var act = () => options.Validate();
+        var act = () => options.ValidateExportOptions();
 
         act.Should().NotThrow<ArgumentValidationException>();
         options.OutputDirectory.Name.Should().Be(tempPath);
@@ -176,7 +176,7 @@ public class ExportOptionsTests
             Endpoint = "https://valid.url"
         };
 
-        var act = () => options.Validate();
+        var act = () => options.ValidateExportOptions();
 
         act.Should().Throw<ArgumentValidationException>()
             .WithMessage("*id, secret, and authority must be specified*");
@@ -191,7 +191,7 @@ public class ExportOptionsTests
             Endpoint = ""
         };
 
-        var act = () => options.Validate();
+        var act = () => options.ValidateExportOptions();
 
         act.Should().Throw<ArgumentValidationException>()
             .WithMessage("The cluster should be a valid, absolute, uri*");
@@ -207,7 +207,7 @@ public class ExportOptionsTests
             OutputPath = "./:Z:/\0"
         };
 
-        var act = () => options.Validate();
+        var act = () => options.ValidateExportOptions();
 
         act.Should().Throw<ArgumentValidationException>()
             .WithMessage("Unable to create output directory");

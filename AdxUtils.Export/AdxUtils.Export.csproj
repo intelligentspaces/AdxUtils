@@ -8,16 +8,11 @@
 
   <ItemGroup>
     <PackageReference Include="Microsoft.Azure.Kusto.Data" Version="10.1.1" />
-    <PackageReference Include="Microsoft.Data.Sqlite.Core" Version="7.0.0" />
-    <PackageReference Include="System.Data.SQLite" Version="1.0.116" />
+    <PackageReference Include="Microsoft.Data.Sqlite" Version="7.0.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\AdxUtils.Options\AdxUtils.Options.csproj" />
-  </ItemGroup>
-
-  <ItemGroup>
-    <Folder Include="Output\" />
   </ItemGroup>
 
 </Project>

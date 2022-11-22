@@ -1,106 +1,68 @@
-﻿using AdxUtils.Options;
-using Kusto.Cloud.Platform.Aad;
-using Kusto.Data;
-using Kusto.Data.Net.Client;
-using Newtonsoft.Json.Linq;
-using System.Collections.Generic;
-using System.Data;
-using System.Data.SQLite;
-using System.Diagnostics;
+﻿using System.Data;
 using AdxUtils.Options;
-using System.Data.Entity;
-using System.Text.RegularExpressions;
-using System.Security.Permissions;
+using Microsoft.Data.Sqlite;
 
-namespace AdxUtils.Export
+namespace AdxUtils.Export;
+
+public class OutputToSqlite
 {
-    public class OutputToSqlite
+    private readonly IKustoQuery _queryService;
+
+    public OutputToSqlite(IKustoQuery queryService)
     {
-        public static string Query { get;set; }
+        _queryService = queryService;
+    }
 
-        public async static void OutputResultToSqlite(IAuthenticationOptions authenticationOptions)
+    public async Task ToSqliteDb(ExportToSqlOptions exportToSqlOptions)
+    {
+        var records = await _queryService.ExecuteQuery(exportToSqlOptions.Query);
+
+        var connectionBuilder = new SqliteConnectionStringBuilder
         {
-            //Declare vars
-            HashSet<string> columnNames = new HashSet<string>();
-            DataTable columns = new DataTable();
-            DataTable adxOutput = new DataTable();
+            DataSource = exportToSqlOptions.OutputFile.FullName
+        };
 
-            var cluster = authenticationOptions.Endpoint;
-            var tableName = authenticationOptions.DatabaseName;  
-            
-            //Initialise Kusto connection
-            var kcsb = new KustoConnectionStringBuilder(cluster, tableName).WithAadAzCliAuthentication(); 
-            var runInput = KustoClientFactory.CreateCslQueryProvider(kcsb);
+        await using var connection = new SqliteConnection(connectionBuilder.ConnectionString);
 
-            if (authenticationOptions.Query.StartsWith("."))
+        try
+        {
+            await connection.OpenAsync();
+                
+            var isFirst = true;
+
+            foreach (var record in records)
             {
-                Console.WriteLine($"Executing command against {tableName}");
-
-                Query = authenticationOptions.Query;
-                runInput = (Kusto.Data.Common.ICslQueryProvider)KustoClientFactory.CreateCslAdminProvider(kcsb);
-            }
-
-            else if (!(authenticationOptions.Query.StartsWith(".") || Regex.IsMatch(authenticationOptions.Query, @"^[a-zA-Z]")))
-            {
-                Console.WriteLine("Invalid query/command input");
-            }
-
-            //Initialise SQL connection
-            string projectDirectory = Directory.GetParent("AdxUtils.Export").Parent.Parent.Parent.Parent.FullName;
-
-            string cs = $"URI=file:{projectDirectory}\\AdxUtils.Export\\Output\\ADXQueryResults.db";
-
-            using var con = new SQLiteConnection(cs);
-            con.Open();
-
-            using var cmd = new SQLiteCommand(con);
-            cmd.CommandText = $"DROP TABLE IF EXISTS {tableName}";
-            cmd.ExecuteNonQuery();
-
-            cmd.CommandText = $@"CREATE TABLE {tableName} (temp STRING)";
-            cmd.ExecuteNonQuery();
-
-            adxOutput.Load(runInput.ExecuteQuery(Query));
-
-            //Create columns in SQL table
-            var getColumns = $"SELECT * FROM {tableName}";
-            columns.Load(runInput.ExecuteQuery(getColumns));
-
-            foreach (DataRow item in columns.Rows)
-            {
-                foreach (DataColumn itemName in columns.Columns)
+                if (isFirst)
                 {
-                    columnNames.Add(itemName.ToString());
-                    Debug.WriteLine(itemName);
-                }
-            }
-            foreach (var name in columnNames)
-            {
-                Debug.WriteLine($"{name}");
-                cmd.CommandText = $"ALTER TABLE {tableName} ADD {name} varchar(255)";
-                cmd.ExecuteNonQuery();
-            }
+                    var columns = string.Join(", ", record.Fields.Select(f => $"[{f}] TEXT"));
+                    var createTableStatement = $"CREATE TABLE export ({columns})";
 
-            //Insert data into columns
-            Debug.WriteLine(adxOutput.Rows.Count);
-            foreach (DataRow row in adxOutput.Rows)
-            {
-                foreach (DataColumn column in adxOutput.Columns)
+                    var command = connection.CreateCommand();
+                    command.CommandText = createTableStatement;
+                    command.CommandType = CommandType.Text;
+
+                    await command.ExecuteNonQueryAsync();
+                
+                    isFirst = false;
+                }
+
+                var insertColumns = string.Join(", ", record.Fields.Select(f => $"[{f}]"));
+                var parameters = string.Join(", ", Enumerable.Range(1, record.FieldCount).Select(i => $"$p{i}"));
+
+                var insertCommand = connection.CreateCommand();
+                insertCommand.CommandText = $"INSERT INTO export ({insertColumns}) VALUES ({parameters})";
+
+                for (var i = 1; i <= record.FieldCount; i++)
                 {
-                    Debug.WriteLine($"{column}");
-                    Debug.WriteLine(row[column].ToString());
-
-
-                    string columnName = column.ToString();
-                    string columnItem = row[column].ToString();
-
-                    cmd.CommandText = $"INSERT INTO {tableName}({columnName}) VALUES ({columnItem})";
-                    cmd.ExecuteNonQuery();
+                    insertCommand.Parameters.Add(new SqliteParameter($"$p{i}", record.Values[i - 1]));
                 }
+
+                await insertCommand.ExecuteNonQueryAsync();
             }
-            cmd.CommandText = $"ALTER TABLE {tableName} DROP COLUMN temp";
-            cmd.ExecuteNonQuery();
-            SQLiteConnection.ClearAllPools();
+        }
+        finally
+        {
+            await connection.CloseAsync();
         }
     }
 }
