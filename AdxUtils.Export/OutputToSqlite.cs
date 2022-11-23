@@ -86,6 +86,7 @@ public class OutputToSqlite
             case not null when type == typeof(decimal):
                 return "REAL";
             case not null when type == typeof(bool):
+            case not null when type == typeof(sbyte):
             case not null when type == typeof(DateTime):
             case not null when type == typeof(DateTimeOffset):
                 return "NUMERIC";
