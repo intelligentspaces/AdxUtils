@@ -1,5 +1,6 @@
 ﻿using System.Data;
 using System.Data.SqlTypes;
+using Newtonsoft.Json.Linq;
 
 namespace AdxUtils.Export.Tests;
 
@@ -57,14 +58,14 @@ public class KustoQueryTests
         // Set the input row data and the expected generated string output
         var recordData = new List<object[]>
         {
-            new object[] {true, (sbyte) 1, new DateTime(2022, 10, 1, 12, 13, 14), Guid.Parse("1b7c2612-e645-4ae8-9a7c-9e4418053460"), 12, 14L, 12.3D, "string1", TimeSpan.FromDays(1), new SqlDecimal(3.14)},
-            new object[] {false, (sbyte) 0, new DateTime(2022, 10, 1, 12, 13, 14), Guid.Parse("1b7c2612-e645-4ae8-9a7c-9e4418053460"), 12, DBNull.Value, 12.3D, "string2", TimeSpan.FromMinutes(1), new SqlDecimal(3.14)}
+            new object[] {true, (sbyte) 1, new DateTime(2022, 10, 1, 12, 13, 14), Guid.Parse("1b7c2612-e645-4ae8-9a7c-9e4418053460"), 12, 14L, 12.3D, "string1", TimeSpan.FromDays(1), JObject.Parse("{ \"col1\": 1 }"), new SqlDecimal(3.14)},
+            new object[] {false, (sbyte) 0, new DateTime(2022, 10, 1, 12, 13, 14), Guid.Parse("1b7c2612-e645-4ae8-9a7c-9e4418053460"), 12, DBNull.Value, 12.3D, "string2", TimeSpan.FromMinutes(1), JArray.Parse("[1, 2, \"a\"]"), new SqlDecimal(3.14)}
         };
 
         var expectedExportData = new List<string>
         {
-            "1,1,2022-10-01T12:13:14.0000000,1b7c2612-e645-4ae8-9a7c-9e4418053460,12,14,12.3,\"string1\",1.00:00:00,3.14",
-            "0,0,2022-10-01T12:13:14.0000000,1b7c2612-e645-4ae8-9a7c-9e4418053460,12,,12.3,\"string2\",00:01:00,3.14"
+            "1,1,2022-10-01T12:13:14.0000000,1b7c2612-e645-4ae8-9a7c-9e4418053460,12,14,12.3,\"string1\",1.00:00:00,\"{\"\"col1\"\":1}\",3.14",
+            "0,0,2022-10-01T12:13:14.0000000,1b7c2612-e645-4ae8-9a7c-9e4418053460,12,,12.3,\"string2\",00:01:00,\"[1,2,\"\"a\"\"]\",3.14"
         };
 
         // Setup the call to GetValues so that each call returns the next row of data
@@ -101,7 +102,8 @@ public class KustoQueryTests
             ColumnSchema.FromNameAndCslType("col7", "real"),
             ColumnSchema.FromNameAndCslType("col8", "string"),
             ColumnSchema.FromNameAndCslType("col9", "timespan"),
-            ColumnSchema.FromNameAndCslType("col10", "decimal")
+            ColumnSchema.FromNameAndCslType("col10", "dynamic"),
+            ColumnSchema.FromNameAndCslType("col11", "decimal"),
         };
 
         var sourceTable = new TableSchema("table 1", columns);
