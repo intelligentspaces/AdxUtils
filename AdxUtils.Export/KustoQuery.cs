@@ -2,6 +2,8 @@
 using System.Globalization;
 using System.Text;
 using Kusto.Data.Common;
+using Newtonsoft.Json;
+using Newtonsoft.Json.Linq;
 
 namespace AdxUtils.Export;
 
@@ -79,6 +81,8 @@ public class KustoQuery : IKustoQuery
                 string s => $"\"{s.Replace("\"", "\"\"")}\"",
                 TimeSpan ts => ts.ToString(),
                 SqlDecimal d => d.ToString(),
+                JObject jObject => $"\"{jObject.ToString(Formatting.None).Replace("\"", "\"\"")}\"",
+                JArray jArray => $"\"{jArray.ToString(Formatting.None).Replace("\"", "\"\"")}\"",
                 _ => string.Empty
             };
 
