@@ -7,6 +7,14 @@
 
 This is a command line application which is intended to provide a useful set of utilities for working with Azure Data Explorer. Mostly to make things easier where some tasks are not supported by the [Azure CLI](https://learn.microsoft.com/cli/azure/) or are needed to work in a way to support other activities.
 
+## Installation
+
+You can install the utility as a dotnet global tool using the published package available at [nuget.org](https://www.nuget.org/packages/AdxUtilities/).
+
+```bash
+> dotnet tool install --global AdxUtilities
+```
+
 ## Authentication
 
 The app can currently use either Client Secret Key authentication, or Azure CLI authentication. Using CLI authentication allows the application to make use of the existing sign-in information from the Azure CLI tool.
