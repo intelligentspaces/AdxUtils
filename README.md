@@ -32,5 +32,6 @@ An example usage of the command is
            --function folder3/,function1
            --export Table1,Table2
            --rename Table4=Table5
+           --update table=Table1 columnType=Type columnToAdd=Column1 columnToDrop=Column2
            --use-cli
 ```
