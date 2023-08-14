@@ -212,4 +212,59 @@ public class ExportOptionsTests
         act.Should().Throw<ArgumentValidationException>()
             .WithMessage("Unable to create output directory");
     }
+
+    [Fact]
+    public void WhenOptionsIncludeUpdate_WhenPropertyIsCalled_ThenValueIsConvertedToPairs()
+    {
+        var expected = new List<(string, string)>
+        {
+            ("table", "TestTable"),
+            ("columnType", "string"),
+            ("columnToAdd", "TestColumn")
+        };
+
+        var options = new ExportOptions
+        {
+            Update = new[] { "table=TestTable", "columnType=string", "columnToAdd=TestColumn" }
+        };
+
+        var parsedPairs = options.ManageColumnsToUpdateInTable;
+
+        parsedPairs.Should().BeEquivalentTo(expected);
+    }
+
+
+    [Fact]
+    public void WhenOptionsIncludeEmptyUpdate_WhenPropertyIsCalled_ThenAnEmptyArrayIsReturned()
+    {
+        var options = new ExportOptions
+        {
+            Update = Array.Empty<string>()
+        };
+
+        var parsedPairs = options.ManageColumnsToUpdateInTable;
+
+        parsedPairs.Should().BeEmpty();
+    }
+
+
+    [Fact]
+    public void WhenOptionsIncludeInvalidUpdatePairs_WhenPropertyIsCalled_ThenInvalidValuesAreIgnored()
+    {
+        var expected = new List<(string, string)>
+        {
+            ("table", "TestTable"),
+            ("columnType", "string"),
+            ("columnToAdd", "TestColumn")
+        };
+
+        var options = new ExportOptions
+        {
+            Update = new[] { "table=TestTable", "columnType=string", "columnToAdd=TestColumn", "columnToDrop->TestColumn" }
+        };
+
+        var parsedPairs = options.ManageColumnsToUpdateInTable;
+
+        parsedPairs.Should().BeEquivalentTo(expected);
+    }
 }

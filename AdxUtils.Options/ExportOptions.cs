@@ -65,7 +65,6 @@ public class ExportOptions : IAuthenticationOptions
     [Option('o', "output", Required = false, Default = ".", HelpText = "Path for the output file to be written to")]
     public string OutputPath { get; set; } = ".";
 
-    //TODO
     [Option('u', "update", Required = false, HelpText = "Table to be updated (e.g. table=table1,columnType=int, columnToAdd=column,columnToDrop=column)\"")]
     public IEnumerable<string>? Update { get; set; }
 
