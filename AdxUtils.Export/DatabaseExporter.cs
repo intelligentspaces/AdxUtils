@@ -62,7 +62,7 @@ public class DatabaseExporter
                     {
                         await _queryService.InsertNewColumnInTable(tableSchema.Value, columnToAdd, columnType);
                     }
-                    if(!String.IsNullOrEmpty(columnToDelete))
+                    if(!String.IsNullOrEmpty(columnToDelete) && existingColumns.Contains(columnToDelete))
                     {
                         await _queryService.DropColumnInTable(tableSchema.Value, columnToDelete);
                     }
