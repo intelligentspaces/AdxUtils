@@ -65,6 +65,9 @@ public class ExportOptions : IAuthenticationOptions
     [Option('o', "output", Required = false, Default = ".", HelpText = "Path for the output file to be written to")]
     public string OutputPath { get; set; } = ".";
 
+    [Option('u', "update", Required = false, HelpText = "Table to be updated (e.g. table=table1,columnType=int, columnToAdd=column,columnToDrop=column)\"")]
+    public IEnumerable<string>? Update { get; set; }
+
     public DirectoryInfo OutputDirectory { get; private set; } = new (".");
 
     /// <summary>
@@ -87,7 +90,27 @@ public class ExportOptions : IAuthenticationOptions
             return result.ToArray();
         }
     }
+    
+    /// <summary>
+    /// Gets the columns to be added or removed in the table
+    /// </summary>
+    public IEnumerable<(string, string)> ManageColumnsToUpdateInTable
+    {
+        get
+        {
+            if (Update == null || !Update.Any())
+            {
+                return Array.Empty<(string, string)>();
+            }
 
+            var result = from updateTable in Update
+                         let pair = updateTable.Split('=').Take(2).ToArray()
+                         where pair.Length == 2 && pair.All(i => !string.IsNullOrEmpty(i))
+                         select (pair[0], pair[1]);
+
+            return result.ToArray();
+        }
+    }
     /// <summary>
     /// Gets the collection of ignored tables as a non-nullable array.
     /// </summary>

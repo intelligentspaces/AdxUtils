@@ -1,6 +1,7 @@
 ﻿using System.Data.SqlTypes;
 using System.Globalization;
 using System.Text;
+using AdxUtils.Options;
 using Kusto.Data.Common;
 using Newtonsoft.Json;
 using Newtonsoft.Json.Linq;
@@ -11,12 +12,15 @@ public class KustoQuery : IKustoQuery
 {
     private readonly ICslQueryProvider _client;
 
+    private readonly ICslAdminProvider _adminProvider;
+
     private readonly string _databaseName;
 
-    public KustoQuery(ICslQueryProvider queryProvider)
+    public KustoQuery(ICslQueryProvider queryProvider, ICslAdminProvider adminProvider)
     {
         _client = queryProvider;
         _databaseName = _client.DefaultDatabaseName;
+        _adminProvider = adminProvider;
     }
 
     public async Task<string> TableDataToCslString(TableSchema table, string tempTableName)
@@ -90,5 +94,49 @@ public class KustoQuery : IKustoQuery
         }
 
         return string.Join(",", values);
+    }
+
+    public async Task DropColumnInTable(TableSchema table, string columnToDrop)
+    {
+       
+        var query = $".drop table {table.Name} columns({columnToDrop})";
+        var clientRequestProperties = new ClientRequestProperties
+        {
+            ClientRequestId = $"AdxUtils.Export;{Guid.NewGuid().ToString()}"
+        };
+        clientRequestProperties.SetOption(ClientRequestProperties.OptionNoTruncation, true);
+        try
+        {
+            await _adminProvider.ExecuteControlCommandAsync(_databaseName, query, clientRequestProperties);
+        }
+        catch (Exception ex)
+        {
+            throw new DatabaseOperationException("Unable to drop the column from the specified table.", ex);
+        }
+         
+    }
+    public async Task InsertNewColumnInTable(TableSchema table, string newColumnToInsert, string columnType)
+    {
+        var queryBuilder = new StringBuilder();
+        foreach (var record in table.Columns)
+        {
+            queryBuilder.AppendLine($"{record.Key} : {record.Value.CslType},");
+        }
+        var query = $".create-merge table {table.Name} ( {queryBuilder} {newColumnToInsert}: {columnType})";
+
+        var clientRequestProperties = new ClientRequestProperties
+        {
+            ClientRequestId = $"AdxUtils.Export;{Guid.NewGuid().ToString()}"
+        };
+        clientRequestProperties.SetOption(ClientRequestProperties.OptionNoTruncation, true);
+        try
+        {
+            await _adminProvider.ExecuteControlCommandAsync(_databaseName, query, clientRequestProperties);
+        }
+        catch (Exception ex)
+        {
+            throw new DatabaseOperationException("Unable to insert the column in the specified table.", ex);
+        }
+
     }
 }

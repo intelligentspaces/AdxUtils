@@ -44,16 +44,44 @@ public class DatabaseExporter
         
         foreach (var tableSchema in databaseSchema.Tables)
         {
+            var currentTableSchema = tableSchema;
             if (options.IgnoredTablesArray.Contains(tableSchema.Key, StringComparer.OrdinalIgnoreCase)) continue;
             
+            var tableScript = tableSchema.Value.ToCslString();
+            if (options.Update != null)
+            {
+                string? columnType = options.ManageColumnsToUpdateInTable.FirstOrDefault(t => t.Item1.Contains("columnType")).Item2;
+                string? columnToAdd = options.ManageColumnsToUpdateInTable.FirstOrDefault(t => t.Item1.Contains("columnToAdd")).Item2;
+                string? tableToUpdate = options.ManageColumnsToUpdateInTable.FirstOrDefault(t => t.Item1.Contains("table")).Item2;
+                string? columnToDelete = options.ManageColumnsToUpdateInTable.FirstOrDefault(t => t.Item1.Contains("columnToDrop")).Item2;
+                if (!String.IsNullOrEmpty(tableToUpdate)  && tableScript.Contains(tableToUpdate))
+                {
+                    //Verify the column to add is not already defined
+                    var existingColumns = tableSchema.Value.Columns.Keys.ToList();
+                    if (!String.IsNullOrEmpty(columnToAdd) && !existingColumns.Contains(columnToAdd) && !String.IsNullOrEmpty(columnType))
+                    {
+                        await _queryService.InsertNewColumnInTable(tableSchema.Value, columnToAdd, columnType);
+                    }
+                    if(!String.IsNullOrEmpty(columnToDelete))
+                    {
+                        await _queryService.DropColumnInTable(tableSchema.Value, columnToDelete);
+                    }
+                    //Update Database Schema
+                     (_, databaseSchema) = (await _adminService.GetDatabaseSchema()).Databases.First();
+                     var tableUpdated = databaseSchema.Tables.ToList().FirstOrDefault(t => t.Key.Equals(tableToUpdate));
+                     currentTableSchema = tableUpdated;
+                }
+            }
+            if (options.IgnoredTablesArray.Contains(currentTableSchema.Key, StringComparer.OrdinalIgnoreCase)) continue;
+            
             var ingestionTimePolicy = ingestionTimePolicies.FirstOrDefault(p =>
-                p.DatabaseName() == options.DatabaseName && p.TableName() == tableSchema.Key);
+                p.DatabaseName() == options.DatabaseName && p.TableName() == currentTableSchema.Key);
             
             var mapping =
-                databaseMappings.FirstOrDefault(m => m.Database == options.DatabaseName && m.Table == tableSchema.Key);
+                databaseMappings.FirstOrDefault(m => m.Database == options.DatabaseName && m.Table == currentTableSchema.Key);
             
-            await writer.WriteLineAsync($"// Creating {tableSchema.Key}");
-            await writer.WriteLineAsync(tableSchema.Value.ToCslString());
+            await writer.WriteLineAsync($"// Creating {currentTableSchema.Key}");
+            await writer.WriteLineAsync(currentTableSchema.Value.ToCslString());
             if (ingestionTimePolicy != null)
             {
                 await writer.WriteLineAsync();
@@ -96,17 +124,17 @@ public class DatabaseExporter
         await writer.WriteLineAsync("// Ingest data");
         await writer.WriteLineAsync("//");
         await writer.WriteLineAsync();
-        foreach (var tableSchema in databaseSchema.Tables.Where(tableSchema =>
-                     options.ExportedDataTablesArray.Contains(tableSchema.Key, StringComparer.OrdinalIgnoreCase)))
+        foreach (var currentTableSchema in databaseSchema.Tables.Where(currentTableSchema =>
+                     options.ExportedDataTablesArray.Contains(currentTableSchema.Key, StringComparer.OrdinalIgnoreCase)))
         {
-            var temp = tableSchema.Value.Clone() as TableSchema;
+            var temp = currentTableSchema.Value.Clone() as TableSchema;
             temp!.Name = $"{temp.Name}_temp";
             await writer.WriteLineAsync(temp.ToCslString());
             await writer.WriteLineAsync();
             
-            await writer.WriteLineAsync(await _queryService.TableDataToCslString(tableSchema.Value, temp.Name));
+            await writer.WriteLineAsync(await _queryService.TableDataToCslString(currentTableSchema.Value, temp.Name));
 
-            await writer.WriteLineAsync(tableSchema.Value.SetOrReplaceTableCslString(temp.Name));
+            await writer.WriteLineAsync(currentTableSchema.Value.SetOrReplaceTableCslString(temp.Name));
             await writer.WriteLineAsync();
 
             await writer.WriteLineAsync(temp.DropTableCslString());
