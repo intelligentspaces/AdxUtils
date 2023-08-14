@@ -16,7 +16,11 @@ public class KustoQueryTests
         // Configure ICslQueryProvider mock
         var provider = new Mock<ICslQueryProvider>();
         provider.SetupGet(p => p.DefaultDatabaseName).Returns("db01");
-        
+
+        // Configure ICslAdminProvider mock
+        var adminProvider = new Mock<ICslAdminProvider>();
+        adminProvider.SetupGet(p => p.DefaultDatabaseName).Returns("db01");
+
         var generatedQuery = string.Empty;
         ClientRequestProperties? requestProperties = null;
         
@@ -31,7 +35,7 @@ public class KustoQueryTests
             .ReturnsAsync(dataReader.Object);
         
         // Create a new instance of the class under test
-        var query = new KustoQuery(provider.Object);
+        var query = new KustoQuery(provider.Object, adminProvider.Object);
 
         // Execute query
         var sourceTable = new TableSchema("table 1");
@@ -82,13 +86,18 @@ public class KustoQueryTests
         var provider = new Mock<ICslQueryProvider>();
         provider.SetupGet(p => p.DefaultDatabaseName).Returns("db01");
 
+
+        // Configure ICslAdminProvider mock
+        var adminProvider = new Mock<ICslAdminProvider>();
+        adminProvider.SetupGet(p => p.DefaultDatabaseName).Returns("db01");
+
         // Set up the call to the execute method
         provider.Setup(p =>
                 p.ExecuteQueryAsync(It.IsAny<string>(), It.IsAny<string>(), It.IsAny<ClientRequestProperties>()))
             .ReturnsAsync(dataReader.Object);
         
         // Create a new instance of the class under test
-        var query = new KustoQuery(provider.Object);
+        var query = new KustoQuery(provider.Object, adminProvider.Object);
 
         // Set up the table schema to pass to the method
         var columns = new List<ColumnSchema>
