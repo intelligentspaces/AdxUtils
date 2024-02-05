@@ -34,11 +34,11 @@ public class KustoQuery : IKustoQuery
 
         queryBuilder.AppendLine($".set-or-replace {table.Name}");
         queryBuilder.AppendLine($"with(policy_ingestiontime = true, distributed = False) <| datatable ({schema})");
-        foreach (var record in tableData)
-        {
-            queryBuilder.AppendLine(record);
-        }
-
+        queryBuilder.AppendLine("[");
+        List<string> records = tableData.ToList();
+        string formattedListWithComma = string.Join(", \n",records);
+        queryBuilder.AppendLine(formattedListWithComma);
+        queryBuilder.AppendLine("]");
         return queryBuilder.ToString();
     }
 
