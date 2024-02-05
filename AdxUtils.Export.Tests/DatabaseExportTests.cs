@@ -146,7 +146,6 @@ public class DatabaseExportTests
             .Select(l => l.Trim())
             .Where(l => !string.IsNullOrEmpty(l))
             .ToList();
-        var temp = result;
 
         result.Should().NotBeEmpty().And.Contain(expected);
     }
