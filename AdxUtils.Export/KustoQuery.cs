@@ -23,7 +23,7 @@ public class KustoQuery : IKustoQuery
         _adminProvider = adminProvider;
     }
 
-    public async Task<string> TableDataToCslString(TableSchema table, string tempTableName)
+    public async Task<string> TableDataToCslString(TableSchema table, string schema)
     {
         var queryBuilder = new StringBuilder();
 
@@ -31,13 +31,14 @@ public class KustoQuery : IKustoQuery
         var tableData = await GetTableData(table);
 
         if (!tableData.Any()) return string.Empty;
-        
-        queryBuilder.AppendLine($".ingest inline into table {CslSyntaxGenerator.NormalizeTableName(tempTableName)} <|");
-        foreach (var record in tableData)
-        {
-            queryBuilder.AppendLine(record);
-        }
 
+        queryBuilder.AppendLine($".set-or-replace {table.Name}");
+        queryBuilder.AppendLine($"with(policy_ingestiontime = true, distributed = False) <| datatable ({schema})");
+        queryBuilder.AppendLine("[");
+        List<string> records = tableData.ToList();
+        string formattedListWithComma = string.Join(", \n",records);
+        queryBuilder.AppendLine(formattedListWithComma);
+        queryBuilder.AppendLine("]");
         return queryBuilder.ToString();
     }
 

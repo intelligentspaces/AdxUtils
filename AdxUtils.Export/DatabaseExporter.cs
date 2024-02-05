@@ -1,5 +1,8 @@
 ﻿using AdxUtils.Options;
+using CommandLine.Text;
 using Kusto.Data.Common;
+using System.Collections.Generic;
+using System.Text;
 
 namespace AdxUtils.Export;
 
@@ -127,17 +130,13 @@ public class DatabaseExporter
         foreach (var currentTableSchema in databaseSchema.Tables.Where(currentTableSchema =>
                      options.ExportedDataTablesArray.Contains(currentTableSchema.Key, StringComparer.OrdinalIgnoreCase)))
         {
-            var temp = currentTableSchema.Value.Clone() as TableSchema;
-            temp!.Name = $"{temp.Name}_temp";
-            await writer.WriteLineAsync(temp.ToCslString());
-            await writer.WriteLineAsync();
-            
-            await writer.WriteLineAsync(await _queryService.TableDataToCslString(currentTableSchema.Value, temp.Name));
-
-            await writer.WriteLineAsync(currentTableSchema.Value.SetOrReplaceTableCslString(temp.Name));
-            await writer.WriteLineAsync();
-
-            await writer.WriteLineAsync(temp.DropTableCslString());
+            var columns = currentTableSchema.Value.Columns.Values;
+            List<string> schema = new List<string>();
+            foreach (var record in columns)
+            {
+                schema.Add($"{record.Name} : {record.CslType}");
+            }
+            await writer.WriteLineAsync(await _queryService.TableDataToCslString(currentTableSchema.Value, string.Join(", ", schema)));
             await writer.WriteLineAsync();
         }
     }

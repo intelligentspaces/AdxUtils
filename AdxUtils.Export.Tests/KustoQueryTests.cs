@@ -115,15 +115,15 @@ public class KustoQueryTests
             ColumnSchema.FromNameAndCslType("col11", "decimal"),
         };
 
-        var sourceTable = new TableSchema("table 1", columns);
-        const string tempTable = "table1_temp";
+        var sourceTable = new TableSchema("table1", columns);
+        const string schema = "col1:string, col2:datetime";
 
         // Execute the method
-        var result = await query.TableDataToCslString(sourceTable, tempTable);
+        var result = await query.TableDataToCslString(sourceTable, schema);
 
         // Assert results
         result.Should().NotBeEmpty()
-            .And.StartWith(".ingest inline into table table1_temp <|")
+            .And.StartWith(".set-or-replace table1")
             .And.ContainAll(expectedExportData);
     }
 }

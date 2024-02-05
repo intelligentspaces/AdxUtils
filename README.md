@@ -21,7 +21,7 @@ The app can currently use either Client Secret Key authentication, or Azure CLI 
 
 ## Export
 
-This is the first of the utilities developed which automates the generation of a CSL script for a given database. The script contains the commands needed to re-create the tables and functions, along with mapping information. It also supports renaming of tables and the ability to copy data using an `.ingest inline` command. The generated output is intended to work with the [Azure DevOps Task for Data Explorer](https://learn.microsoft.com/azure/data-explorer/devops) where the commands are split based on empty lines and executed individually against the target database. The generated script can just as easily be executed directly by using an `.execute database script`.
+This is the first of the utilities developed which automates the generation of a CSL script for a given database. The script contains the commands needed to re-create the tables and functions, along with mapping information. It also supports renaming of tables and the ability to copy data using an `.set-or-replace` command with `datatable` operator. The generated output is intended to work with the [Azure DevOps Task for Data Explorer](https://learn.microsoft.com/azure/data-explorer/devops) where the commands are split based on empty lines and executed individually against the target database. The generated script can just as easily be executed directly by using an `.execute database script`.
 
 An example usage of the command is
 

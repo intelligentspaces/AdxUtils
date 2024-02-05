@@ -296,7 +296,7 @@ public class DatabaseExportTests
         var queryService = new Mock<IKustoQuery>();
 
         var table1DataBuilder = new StringBuilder();
-        table1DataBuilder.AppendLine(".ingest inline into table table1_temp <|");
+        table1DataBuilder.AppendLine(".set-or-replace table1 with(policy_ingestiontime = true, distributed = False) <| datatable (col1:string, col2:datetime)");
         table1DataBuilder.AppendLine("\"row1\",2022-10-21T19:21:23.000000");
         table1DataBuilder.AppendLine("\"row2\",2022-10-21T19:22:27.000000");
 
