@@ -17,10 +17,6 @@
 // Ingest data
 //
 
-.ingest inline into table table1_temp <|
+.set-or-replace table1 with(policy_ingestiontime = true, distributed = False) <| datatable (col1:string, col2:datetime)
 "row1",2022-10-21T19:21:23.000000
 "row2",2022-10-21T19:22:27.000000
-
-.set-or-replace  table1 with(policy_ingestiontime = true, distributed = False) <| table1_temp
-
-.drop table table1_temp ifexists
